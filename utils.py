@@ -7,4 +7,4 @@ def lrelu(x, alpha):
 def residuleBlock(inputs, filters, \
 	kernel_size, stride, idx, scope_str = "rB"):
 	with tf.variable_scope(scopr_str + idx) as scope:
-		
+		print("hello")
