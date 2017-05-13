@@ -1,6 +1,5 @@
 # BiGAN_Reco
 To Load the data:
-sss
 ```python
 dict = load("path_path_to_tinyimagenet")
 class_names, X_train, y_train, X_val, y_val, X_test, y_test = dict["whole"]
