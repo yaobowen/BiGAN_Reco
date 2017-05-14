@@ -6,7 +6,7 @@ class_names, X_train, y_train, X_val, y_val, X_test, y_test = dict["whole"]
 class_names, X_train_toy, y_train_toy, X_val_toy, y_val_toy, X_test, y_test = dict["toy"]
 
 ```
-To get the minibath
+To get the minibatch
 
 ```python
 for n in xrange(n_epochs):
