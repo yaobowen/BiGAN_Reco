@@ -8,11 +8,6 @@ import math
 def lrelu(x, alpha):
 	return tf.maximum(alpha * x, x)
 
-def residuleBlock(inputs, filters, \
-	kernel_size, stride, idx, scope_str = "rB"):
-	with tf.variable_scope(scopr_str + idx) as scope:
-		print("hello")
-
 def load(path, dtype=np.float64):
     '''
     Load TinyImageNet. Each of TinyImageNet-100-A, TinyImageNet-100-B, and
@@ -121,21 +116,50 @@ def load(path, dtype=np.float64):
     toyindex_train = generate_toy()
     toyindex_val =  np.random.choice(X_val.shape[0], 100)
     toy = (class_names, X_train[toyindex_train, ], y_train[toyindex_train], X_val[toyindex_val, ], y_val[toyindex_val], X_test, y_test)
-    dictdata = {"toy": toy}
+    dictdata["toy"] = toy
     print("Whole data shape:\n")
     print("X_train: {}, y_train: {}, X_val: {}, y_val: {}, X_test: {}".format(whole[1].shape, whole[2].shape, whole[3].shape, whole[4].shape, whole[5].shape))
     print("Toy data shape:\n")
     print("X_train: {}, y_train: {}, X_val: {}, y_val: {}, X_test: {}".format(toy[1].shape, toy[2].shape, toy[3].shape, toy[4].shape, toy[5].shape))
     return dictdata
 
-def getMiniBatch(X, Y, batch_size = 64):
+def load_data(path, prefix=""):
+    X_train = np.load(os.path.join(path, prefix+"X_train.npy"))
+    y_train = np.load(os.path.join(path, prefix+"y_train.npy"))
+    X_val = np.load(os.path.join(path, prefix+"X_val.npy"))
+    y_val = np.load(os.path.join(path, prefix+"y_val.npy"))
+    X_test = np.load(os.path.join(path, prefix+"X_test.npy"))
+    y_test = np.load(os.path.join(path, prefix+"y_test.npy"))
+    return X_train, y_train, X_val, y_val, X_test, y_test
+
+def save_data(dictdata):
+    np.save("class_names", dictdata["whole"][0])  
+    np.save("X_train", np.transpose(dictdata["whole"][1], (0, 2, 3, 1)))
+    np.save("y_train", dictdata["whole"][2])
+    np.save("X_val", np.transpose(dictdata["whole"][3], (0, 2, 3, 1)))
+    np.save("y_val", dictdata["whole"][4])
+    np.save("X_test", np.transpose(dictdata["whole"][5], (0, 2, 3, 1)))
+    np.save("y_test", dictdata["whole"][6])
+
+    np.save("toy_class_names", dictdata["toy"][0])
+    np.save("toy_X_train", np.transpose(dictdata["toy"][1], (0, 2, 3, 1)))
+    np.save("toy_y_train", dictdata["toy"][2])
+    np.save("toy_X_val", np.transpose(dictdata["toy"][3], (0, 2, 3, 1)))
+    np.save("toy_y_val", dictdata["toy"][4])
+    np.save("toy_X_test", np.transpose(dictdata["toy"][5], (0, 2, 3, 1)))
+    np.save("toy_y_test", dictdata["toy"][6])
+
+def getMiniBatch(X, Y = None, batch_size = 64):
     train_indicies = np.arange(X.shape[0])
     np.random.shuffle(train_indicies)
     for i in range(int(math.ceil(X.shape[0] / batch_size))):
     # generate indicies for the batch
         start_idx = (i * batch_size) % X.shape[0]
         idx = train_indicies[start_idx:start_idx+batch_size]
-        yield X[idx,:], Y[idx]
+        if(Y is None):
+            yield X[idx,:]
+        else:
+            yield X[idx,:], Y[idx]
 
 def generate_toy(dtype=np.float64, size = 5):
     print("Generate Toy Data")
