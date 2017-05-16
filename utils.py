@@ -11,7 +11,7 @@ def lrelu(x, alpha):
 def scale(x):
     a = np.amax(x, axis = (1,2), keepdims=True)
     b = np.amin(x, axis = (1,2), keepdims=True)
-    return (b - a) * x / 2.0+ (b + a) / 2.0
+    return 2.0 * x / (b - a) - (b + a) / (b - a)
 
 def load(path, dtype=np.float64):
     '''
