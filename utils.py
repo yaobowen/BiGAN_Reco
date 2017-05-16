@@ -8,6 +8,11 @@ import math
 def lrelu(x, alpha):
 	return tf.maximum(alpha * x, x)
 
+def scale(x):
+    a = np.amax(x, axis = (1,2), keepdims=True)
+    b = np.amin(x, axis = (1,2), keepdims=True)
+    return (b - a) * x / 2.0+ (b + a) / 2.0
+
 def load(path, dtype=np.float64):
     '''
     Load TinyImageNet. Each of TinyImageNet-100-A, TinyImageNet-100-B, and

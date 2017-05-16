@@ -250,6 +250,7 @@ def main():
 	n_epochs = 5
 	print("load data...")
 	X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
+	X_train = scale(X_train)
 	print("finish loading")
 	model.train(X_train, y_train, n_epochs)
 
