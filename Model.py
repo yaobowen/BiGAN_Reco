@@ -50,11 +50,12 @@ class BiGAN(object):
 		all_trainables = tf.trainable_variables()
 		self.e_vars = [var for var in all_trainables if "Encoder" in var.name]
 		self.g_vars = [var for var in all_trainables if "Generator" in var.name]
-		self.global_step = tf.Variable(0, name='global_step', trainable=False)
+		self.e_step = tf.Variable(0, name="e_step", trainable=False)
+		self.g_step = tf.Variable(0, name='g_step', trainable=False)
 		self.e_optimizer = tf.train.AdamOptimizer(self.lr, beta1=0.5)\
-			.minimize(self.e_loss, var_list=self.e_vars, global_step=self.global_step)
+			.minimize(self.e_loss, var_list=self.e_vars, global_step=self.e_step)
 		self.g_optimizer = tf.train.AdamOptimizer(self.lr, beta1=0.5)\
-			.minimize(self.g_loss, var_list=self.g_vars, global_step=self.global_step)
+			.minimize(self.g_loss, var_list=self.g_vars, global_step=self.g_step)
 
 		# add summary operation
 		self.gz_summary = tf.summary.image("generated image", self.gz[:2])
@@ -88,15 +89,17 @@ class BiGAN(object):
 			d = {self.x_placeholder:data_batch, self.z_placeholder:latent_batch}
 			self.sess.run([self.g_optimizer], feed_dict=d)
 
-			gl, _, gs= self.sess.run([self.g_loss_summary, self.g_optimizer, self.global_step], feed_dict=d)
+			gl, _, gs= self.sess.run([self.g_loss_summary, self.g_optimizer, self.g_step], feed_dict=d)
 
-			el, _, es = self.sess.run([self.e_loss_summary, self.e_optimizer, self.global_step], feed_dict=d)
+			el, _, es = self.sess.run([self.e_loss_summary, self.e_optimizer, self.e_step], feed_dict=d)
 
 			if(counter % 50 == 0):
 				print("processing: ", (100.0 * counter * self.batch_size / N, "%"))
 				sys.stdout.flush()
-				summary, global_step = self.sess.run([self.merged_summary, self.global_step], feed_dict=d)
-				self.summary_writer.add_summary(summary, global_step)
+				a, b, c= self.sess.run([self.x_summary, self.gz_summary, self.gex_summary], feed_dict=d)
+				self.summary_writer.add_summary(a, es)
+				self.summary_writer.add_summary(b, es)
+				self.summary_writer.add_summary(c, es)
 			else:
 				self.summary_writer.add_summary(gl, gs)
 				self.summary_writer.add_summary(el, es)
