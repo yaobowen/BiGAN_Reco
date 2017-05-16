@@ -58,9 +58,9 @@ class BiGAN(object):
 			.minimize(self.g_loss, var_list=self.g_vars, global_step=self.g_step)
 
 		# add summary operation
-		self.gz_summary = tf.summary.image("generated image", self.gz[:2])
-		self.x_summary = tf.summary.image("real image", self.x_placeholder[:2])
-		self.gex_summary = tf.summary.image("reconstructed image", self.gex[:2])
+		self.gz_summary = tf.summary.image("generated image", self.gz[:12])
+		self.x_summary = tf.summary.image("real image", self.x_placeholder[:12])
+		self.gex_summary = tf.summary.image("reconstructed image", self.gex[:12])
 		self.e_loss_summary = tf.summary.scalar("encoder loss", self.e_loss)
 		self.g_loss_summary = tf.summary.scalar("generator loss", self.g_loss)
 		self.merged_summary = tf.summary.merge_all()
@@ -93,7 +93,7 @@ class BiGAN(object):
 
 			el, _, es = self.sess.run([self.e_loss_summary, self.e_optimizer, self.e_step], feed_dict=d)
 
-			if(counter % 50 == 0):
+			if(counter % 10 == 0):
 				print("processing: ", (100.0 * counter * self.batch_size / N, "%"))
 				sys.stdout.flush()
 				a, b, c= self.sess.run([self.x_summary, self.gz_summary, self.gex_summary], feed_dict=d)
