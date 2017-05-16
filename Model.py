@@ -88,15 +88,18 @@ class BiGAN(object):
 			d = {self.x_placeholder:data_batch, self.z_placeholder:latent_batch}
 			self.sess.run([self.g_optimizer], feed_dict=d)
 
-			self.sess.run([self.g_optimizer], feed_dict=d)
+			gl, _, gs= self.sess.run([self.g_loss_summary, self.g_optimizer, self.global_step], feed_dict=d)
 
-			self.sess.run([self.e_optimizer], feed_dict=d)
+			el, _, es = self.sess.run([self.e_loss_summary, self.e_optimizer, self.global_step], feed_dict=d)
 
 			if(counter % 50 == 0):
 				print("processing: ", (100.0 * counter * self.batch_size / N, "%"))
 				sys.stdout.flush()
 				summary, global_step = self.sess.run([self.merged_summary, self.global_step], feed_dict=d)
 				self.summary_writer.add_summary(summary, global_step)
+			else:
+				self.summary_writer.add_summary(gl, gs)
+				self.summary_writer.add_summary(el, es)
 
 			counter += 1
 
