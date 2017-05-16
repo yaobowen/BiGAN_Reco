@@ -6,8 +6,8 @@ import sys
 class BiGAN(object):
 
 	def __init__(self, input_h=64, input_w=64, output_h=64, output_w=64,\
-		z_dim = 100, df_dim = 64, gf_dim = 64, c_dim = 3, batch_size = 128,\
-		miu = 10, lamb = 500, lr = 2e-4,\
+		z_dim = 128, df_dim = 64, gf_dim = 64, c_dim = 3, batch_size = 128,\
+		miu = 10, lamb = 1000, lr = 2e-4,\
 		log_dir = "../log", save_dir = "../check_points"):
 
 		self.input_h = input_h
@@ -40,8 +40,8 @@ class BiGAN(object):
 
 		# add losses
 		self.divergence_loss = self.divergence(self.egz) - self.divergence(self.ex)
-		self.x_reconstruction_loss = tf.reduce_mean((self.x_placeholder-self.gex)**2)
-		self.z_reconstruction_loss = tf.reduce_mean((self.z_placeholder-self.egz)**2)
+		self.x_reconstruction_loss = tf.reduce_mean(tf.reduce_sum((self.x_placeholder-self.gex)**2, axis=[1,2,3]))
+		self.z_reconstruction_loss = tf.reduce_mean(tf.reduce_sum((self.z_placeholder-self.egz)**2, axis=[1]))
 
 		self.e_loss = -self.divergence_loss + self.miu * self.x_reconstruction_loss
 		self.g_loss = self.divergence_loss + self.lamb * self.z_reconstruction_loss
@@ -109,7 +109,6 @@ class BiGAN(object):
 
 	def divergence(self, e):
 		mean, s = tf.nn.moments(e, axes=[0])
-		M = e.shape.as_list()[0]
 		re = tf.reduce_sum(-0.5+(mean**2+s**2)/2.0-tf.log(s))
 		return re
 
