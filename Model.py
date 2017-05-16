@@ -93,7 +93,7 @@ class BiGAN(object):
 			self.sess.run([self.e_optimizer], feed_dict=d)
 
 			if(counter % 50 == 0):
-				print("processing: ", (100.0 * counter * self.batch_size / N, "%")
+				print("processing: ", (100.0 * counter * self.batch_size / N, "%"))
 				sys.stdout.flush()
 				summary, global_step = self.sess.run([self.merged_summary, self.global_step], feed_dict=d)
 				self.summary_writer.add_summary(summary, global_step)
