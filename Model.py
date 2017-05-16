@@ -92,8 +92,8 @@ class BiGAN(object):
 
 			self.sess.run([self.e_optimizer], feed_dict=d)
 
-			if(counter % 1 == 0):
-				print("processing: ", (100.0 * counter + 1) / N, "%")
+			if(counter % 50 == 0):
+				print("processing: ", (100.0 * counter * self.batch_size / N, "%")
 				sys.stdout.flush()
 				summary, global_step = self.sess.run([self.merged_summary, self.global_step], feed_dict=d)
 				self.summary_writer.add_summary(summary, global_step)
@@ -249,7 +249,7 @@ def main():
 	data_dir = "../data"
 	n_epochs = 5
 	print("load data...")
-	X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="toy_")
+	X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
 	print("finish loading")
 	model.train(X_train, y_train, n_epochs)
 
