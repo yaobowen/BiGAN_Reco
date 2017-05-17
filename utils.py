@@ -154,12 +154,12 @@ def save_data(dictdata):
     np.save("toy_X_test", np.transpose(dictdata["toy"][5], (0, 2, 3, 1)))
     np.save("toy_y_test", dictdata["toy"][6])
 
-def load_save_SVHN(path_train = "train_32x32.mat", path_test = "test_32x32.mat"):
+def load_SVHN(path_train = "train_32x32.mat", path_test = "test_32x32.mat"):
     mat_train = sio.loadmat(path_train)
     mat_test = sio.loadmat(path_test)
-    X_train = np.array(mat_train['X']).transpose(3, 2, 0, 1)
+    X_train = np.array(mat_train['X']).transpose(3, 0, 1, 2)
     y_train = np.array(mat_train['y']).reshape(-1, )
-    X_test_whole = np.array(mat_test['X']).transpose(3, 2, 0, 1)
+    X_test_whole = np.array(mat_test['X']).transpose(3, 0, 1, 2)
     y_test_whole = np.array(mat_test['y']).reshape(-1, )
 
     # Split test data into validation 
