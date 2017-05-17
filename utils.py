@@ -154,6 +154,43 @@ def save_data(dictdata):
     np.save("toy_X_test", np.transpose(dictdata["toy"][5], (0, 2, 3, 1)))
     np.save("toy_y_test", dictdata["toy"][6])
 
+def load_save_SVHN(path_train = "train_32x32.mat", path_test = "test_32x32.mat"):
+    mat_train = sio.loadmat(path_train)
+    mat_test = sio.loadmat(path_test)
+    X_train = np.array(mat_train['X']).transpose(3, 2, 0, 1)
+    y_train = np.array(mat_train['y']).reshape(-1, )
+    X_test_whole = np.array(mat_test['X']).transpose(3, 2, 0, 1)
+    y_test_whole = np.array(mat_test['y']).reshape(-1, )
+
+    # Split test data into validation 
+    X_val = X_test_whole[0:10000, ]
+    y_val = y_test_whole[0:10000]
+    X_test = X_test_whole[10000:, ]
+    y_test = y_test_whole[10000:]
+    print(X_train.shape, X_val.shape, X_test.shape, y_train.shape, y_val.shape, y_test.shape)
+
+    np.save("X_train", X_train)
+    np.save("y_train", y_train)
+    np.save("X_val", X_val)
+    np.save("y_val", y_val)
+    np.save("X_test", X_test)
+    np.save("y_test", y_test)
+
+    toy_X_train = X_train[0:1000, ]
+    toy_y_train = y_train[0:1000]
+    toy_X_val = X_val[0:1000, ]
+    toy_y_val = y_val[0:1000]
+    toy_X_test = X_test[0:1000, ]
+    toy_y_test = y_test[0:1000]
+
+    np.save("toy_X_train", toy_X_train)
+    np.save("toy_y_train", toy_y_train)
+    np.save("toy_X_val", toy_X_val)
+    np.save("toy_y_val", toy_y_val)
+    np.save("toy_X_test", toy_X_test)
+    np.save("toy_y_test", toy_y_test)
+    print(toy_X_train.shape, toy_X_val.shape, toy_X_test.shape, toy_y_train.shape, toy_y_val.shape, toy_y_test.shape)
+
 def getMiniBatch(X, Y = None, batch_size = 64):
     train_indicies = np.arange(X.shape[0])
     np.random.shuffle(train_indicies)
