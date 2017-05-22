@@ -182,7 +182,7 @@ class AGE_32(object):
 				kernel_size = 4, 
 				strides = 2,
 				padding = "same",
-				use_bias = True
+				use_bias = True,
 				name = "conv4")
 
 			#input size 2 * 2 * z_dim
