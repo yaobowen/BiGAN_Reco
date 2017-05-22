@@ -7,8 +7,8 @@ from tensorflow.examples.tutorials.mnist import input_data
 class AGE_32(object):
 
 	def __init__(self, input_h=32, input_w=32, output_h=32, output_w=32,\
-		z_dim = 10, df_dim = 64, gf_dim = 64, c_dim = 3, batch_size = 128,\
-		miu = 10, lamb = 1000, lr = 2e-4,\
+		z_dim = 10, df_dim = 64, gf_dim = 64, c_dim = 3, batch_size = 128, total_N = 55000, \
+		miu = 10, lamb = 1000, lr = 2e-4, self.decay_every = 5, \
 		log_dir = "../log", save_dir = "../check_points"):
 
 		self.input_h = input_h
@@ -20,10 +20,12 @@ class AGE_32(object):
 		self.gf_dim = gf_dim
 		self.c_dim = c_dim
 		self.batch_size = batch_size
+		self.total_N = 55000
 
 		self.miu = miu
 		self.lamb = lamb
 		self.lr = lr
+		self.decay_every = decay_every
 
 		self.log_dir = log_dir
 		self.save_dir = save_dir
@@ -55,9 +57,12 @@ class AGE_32(object):
 		print(len(self.g_vars))
 		self.e_step = tf.Variable(0, name="e_step", trainable=False)
 		self.g_step = tf.Variable(0, name='g_step', trainable=False)
-		self.e_optimizer = tf.train.AdamOptimizer(self.lr, beta1=0.5)\
+		decay_steps = int(self.decay_every) * int(self.total_N / self.batch_size)
+		self.decayed_lr = tf.train.exponential_decay(self.lr, 
+			self.e_step, decay_steps, 0.5, staircase=False, name="decayed_lr")
+		self.e_optimizer = tf.train.AdamOptimizer(self.decayed_lr, beta1=0.5)\
 			.minimize(self.e_loss, var_list=self.e_vars, global_step=self.e_step)
-		self.g_optimizer = tf.train.AdamOptimizer(self.lr, beta1=0.5)\
+		self.g_optimizer = tf.train.AdamOptimizer(self.decayed_lr, beta1=0.5)\
 			.minimize(self.g_loss, var_list=self.g_vars, global_step=self.g_step)
 
 		# add summary operation
@@ -70,6 +75,7 @@ class AGE_32(object):
 		self.divergence_summary = tf.summary.scalar("divergence loss", self.divergence_loss)
 		self.e_loss_summary = tf.summary.scalar("encoder loss", self.e_loss)
 		self.g_loss_summary = tf.summary.scalar("generator loss", self.g_loss)
+		self.decayed_lr_summary = tf.summary.scalar("decayed learning rate", self.decayed_lr)
 		self.merged_summary = tf.summary.merge_all()
 
 		# add session, log writer and saver
@@ -86,13 +92,14 @@ class AGE_32(object):
 		for i in range(epochs):
 			print("training for epoch ", i)
 			self.run_epoch(X_train, X_val)
+		self.saver.save(self.sess, save_dir, global_step=self.e_step)
+		print("Model saved at", save_dir)
 
 	def run_epoch(self, X_train, X_val):
 		N = X_train.shape[0]
 		data_batches = getMiniBatch(X_train, batch_size = self.batch_size)
 		counter = 0
 		for data_batch in data_batches:
-			print(data_batch.shape)
 			latent_batch = self.latent(self.batch_size)
 			d = {self.x_placeholder:data_batch, self.z_placeholder:latent_batch}
 			self.sess.run([self.g_optimizer], feed_dict=d)
@@ -279,7 +286,7 @@ class AGE_32(object):
 
 def main():
 	data = input("what data to use? ")
-	n_epochs = 5
+	n_epochs = 1
 	if(data == "svhn"):
 		data_dir = "../SVHN_data"
 		log_dir = "../SVHN_log"
