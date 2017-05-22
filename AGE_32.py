@@ -2,11 +2,12 @@ import tensorflow as tf
 from utils import *
 import time
 import sys
+from tensorflow.examples.tutorials.mnist import input_data
 
-class BiGAN(object):
+class AGE_32(object):
 
-	def __init__(self, input_h=64, input_w=64, output_h=64, output_w=64,\
-		z_dim = 128, df_dim = 64, gf_dim = 64, c_dim = 3, batch_size = 128,\
+	def __init__(self, input_h=32, input_w=32, output_h=32, output_w=32,\
+		z_dim = 10, df_dim = 64, gf_dim = 64, c_dim = 3, batch_size = 128,\
 		miu = 10, lamb = 1000, lr = 2e-4,\
 		log_dir = "../log", save_dir = "../check_points"):
 
@@ -121,10 +122,11 @@ class BiGAN(object):
 		with tf.variable_scope(scope_str) as scope:
 			if(reuse):
 				scope.reuse_variables()
+			#input size 32 * 32 * 3
 			conv1 = tf.layers.conv2d(
 				inputs = image, 
 				filters = self.df_dim, 
-				kernel_size = 5, 
+				kernel_size = 4, 
 				strides = 2,
 				padding = "same",
 				name = "conv1")
@@ -134,11 +136,11 @@ class BiGAN(object):
 				axis = -1,
 				name = "bn1")
 
-
+			#input size 16 * 16 * df_dim
 			conv2 = tf.layers.conv2d(
 				inputs = bn1, 
 				filters = 2*self.df_dim, 
-				kernel_size = 5, 
+				kernel_size = 4, 
 				strides = 2,
 				padding = "same",
 				name = "conv2")
@@ -148,11 +150,11 @@ class BiGAN(object):
 				axis = -1,
 				name = "bn2")
 
-
+			#input size 8 * 8 * 2df_dim
 			conv3 = tf.layers.conv2d(
 				inputs = bn2, 
 				filters = 4*self.df_dim, 
-				kernel_size = 5, 
+				kernel_size = 4, 
 				strides = 2,
 				padding = "same",
 				name = "conv3")
@@ -162,26 +164,21 @@ class BiGAN(object):
 				axis = -1,
 				name = "bn3")
 
+			#input size 4 * 4 * * 4df_dim
 			conv4 = tf.layers.conv2d(
 				inputs = bn3, 
-				filters = 8*self.df_dim, 
-				kernel_size = 5, 
+				filters = self.z_dim, 
+				kernel_size = 4, 
 				strides = 2,
 				padding = "same",
 				name = "conv4")
-			lrelu4 = lrelu(conv4, 0.2)
-			bn4 = tf.layers.batch_normalization(
-				inputs = lrelu4,
-				axis = -1,
-				name = "bn4")
 
-			s = bn4.shape.as_list()
-			bn4_flatten = tf.reshape(bn4, [-1, s[1]*s[2]*s[3]], name="bn4_flatten")
-			dense = tf.layers.dense(
-				inputs = bn4_flatten,
-				units = self.z_dim,
-				name = "dense")
-			out = tf.nn.l2_normalize(dense, 1, name="out")
+			#input size 2 * 2 * z_dim
+			out = tf.layers.average_pooling2d(conv4, 2, 2)
+
+			#input size 1 * 1 * z_dim
+			out = tf.reshape(out, [-1, self.z_dim])
+			out = tf.nn.l2_normalize(out, 1, name="out")
 		return out
 
 
@@ -191,19 +188,15 @@ class BiGAN(object):
 		with tf.variable_scope(scope_str) as scope:
 			if(reuse):
 				scope.reuse_variables()
-			z0 = tf.layers.dense(				
-				inputs = z,
-				units = first_h*first_w*self.gf_dim*8,
-				name = "z0")
-			z0_reshape = tf.reshape(z0, [-1, first_h, first_w, self.gf_dim*8], name="z0_reshape")
-			h = tf.nn.relu(z0_reshape, name="h")
 
+			z = tf.reshape(z, [-1, 1, 1, self.z_dim])
+			#input size 1 * 1 * z_dim
 			deconv1 = tf.layers.conv2d_transpose(
-				inputs = h,
-				filters = self.gf_dim*4,
-				kernel_size=5,
-				strides=2,
-				padding = "same",
+				inputs = z,
+				filters = self.gf_dim*8,
+				kernel_size=4,
+				strides=1,
+				padding = "valid",
 				name="deconv1")
 			bn1 = tf.layers.batch_normalization(
 				inputs = deconv1,
@@ -211,10 +204,11 @@ class BiGAN(object):
 				name="bn1")
 			relu1 = tf.nn.relu(bn1, name="relu1")
 
+			#input size 4 * 4 * 8gf_dim
 			deconv2 = tf.layers.conv2d_transpose(
 				inputs = relu1,
-				filters = self.gf_dim*2,
-				kernel_size=5,
+				filters = self.gf_dim*4,
+				kernel_size=4,
 				strides=2,
 				padding = "same",
 				name="deconv2")
@@ -224,10 +218,11 @@ class BiGAN(object):
 				name="bn2")	
 			relu2 = tf.nn.relu(bn2, name="relu2")	
 
+			#input size 8 * 8 * 4gf_dim
 			deconv3 = tf.layers.conv2d_transpose(
 				inputs = relu2,
-				filters = self.gf_dim*1,
-				kernel_size=5,
+				filters = self.gf_dim*2,
+				kernel_size=4,
 				strides=2,
 				padding = "same",
 				name="deconv3")
@@ -237,27 +232,59 @@ class BiGAN(object):
 				name="bn3")				
 			relu3 = tf.nn.relu(bn3, name="relu3")
 
+			#input size 16 * 16 * 2gf_dim
 			deconv4 = tf.layers.conv2d_transpose(
 				inputs = relu3,
-				filters = self.c_dim,
-				kernel_size=5,
+				filters = self.gf_dim*2,
+				kernel_size=4,
 				strides=2,
 				padding = "same",
 				name="deconv4")
+			bn4 = tf.layers.batch_normalization(
+				inputs = deconv4,
+				axis = -1,
+				name="bn4")				
+			relu4 = tf.nn.relu(bn4, name="relu4")
 
-			out = tf.tanh(deconv4, name="out")
+			#input size 32 * 32 * 2gf_dim
+			conv1 = tf.layers.conv2d(inputs = relu4,
+					filters = self.c_dim, 
+					kernel_size = 1,
+					name = "conv1")
+
+			#input size 32 * 32 * c_dim
+			out = tf.tanh(conv1, name="out")
 
 		return out	
 
 def main():
-	model = BiGAN()
-	data_dir = "../data"
+	data = input("what data to use? ")
 	n_epochs = 5
-	print("load data...")
-	X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
-	X_train = scale(X_train)
-	print("finish loading")
-	model.train(X_train, y_train, n_epochs)
+	if(data == "svhn"):
+		data_dir = "../SVHN_data"
+		log_dir = "../SVHN_log"
+		save_dir = "../SVHN_check_points"
+		print("load data...")
+		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
+		X_train = scale(X_train)
+		print("finish loading")
+		model = AGE_32(log_dir=log_dir, save_dir=save_dir)
+	elif(data == "mnist"):
+		log_dir = "../MNIST_log"
+		save_dir = "../MNIST_check_points"
+		print("load data...")
+		mnist = input_data.read_data_sets("../MNIST_data/", one_hot=True)
+		X_train = np.reshape(mnist.train.images, [-1,28,28])
+		X_val = np.reshape(mnist.validation.images, [-1,28,28])
+		X_train = np.lib.pad(X_train,((0,0),(2,2),(2,2)),'constant',constant_values=((0,0),(0,0),(0,0)))
+		X_val = np.lib.pad(X_val,((0,0),(2,2),(2,2)),'constant',constant_values=((0,0),(0,0),(0,0)))
+		X_train = np.expand_dims(X_train, 3)
+		X_val = np.expand_dims(X_val, 3)
+		X_train = scale(X_train)
+		print("finish loading")
+		model = AGE_32(log_dir=log_dir, save_dir=save_dir, c_dim=1)
+
+	model.train(X_train, X_val, n_epochs)
 
 if __name__ == "__main__":
 	main()
