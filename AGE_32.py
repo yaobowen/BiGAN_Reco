@@ -8,7 +8,7 @@ class AGE_32(object):
 
 	def __init__(self, input_h=32, input_w=32, output_h=32, output_w=32,\
 		z_dim = 10, df_dim = 64, gf_dim = 64, c_dim = 3, batch_size = 128, total_N = 55000, \
-		miu = 10, lamb = 1000, lr = 2e-4, self.decay_every = 5, \
+		miu = 10, lamb = 1000, lr = 2e-4, decay_every = 5, \
 		log_dir = "../log", save_dir = "../check_points"):
 
 		self.input_h = input_h
@@ -53,8 +53,12 @@ class AGE_32(object):
 		all_trainables = tf.trainable_variables()
 		self.e_vars = [var for var in all_trainables if "Encoder" in var.name]
 		self.g_vars = [var for var in all_trainables if "Generator" in var.name]
-		print(len(self.e_vars))
-		print(len(self.g_vars))
+		print("Encoder variables:")
+		for var in self.e_vars:
+			print(var.name)
+		print("Generator variables:")
+		for var in self.g_vars:
+			print(var.name)
 		self.e_step = tf.Variable(0, name="e_step", trainable=False)
 		self.g_step = tf.Variable(0, name='g_step', trainable=False)
 		decay_steps = int(self.decay_every) * int(self.total_N / self.batch_size)
