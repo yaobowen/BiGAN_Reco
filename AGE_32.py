@@ -59,10 +59,10 @@ class AGE_32(object):
 			.minimize(self.g_loss, var_list=self.g_vars, global_step=self.g_step)
 
 		# add summary operation
-		self.gz_summary = tf.summary.image("generated image", self.gz[:12])
-		self.x_summary = tf.summary.image("real image", self.x_placeholder[:12])
-		self.gex_summary = tf.summary.image("reconstructed image", self.gex[:12])
-		mean, var = tf.nn.moments(self.egz, axes=[1])
+		self.gz_summary = tf.summary.image("generated image", self.gz)
+		self.x_summary = tf.summary.image("real image", self.x_placeholder)
+		self.gex_summary = tf.summary.image("reconstructed image", self.gex)
+		mean, var = tf.nn.moments(self.egz, axes=[0])
 		self.mean_summary = tf.summary.histogram("component-wise mean", mean)
 		self.var_summary = tf.summary.histogram("component-wise var", var)
 		self.divergence_summary = tf.summary.scalar("divergence loss", self.divergence_loss)
@@ -117,8 +117,8 @@ class AGE_32(object):
 
 
 	def divergence(self, e):
-		mean, s = tf.nn.moments(e, axes=[0])
-		re = tf.reduce_sum(-0.5+(mean**2+s**2)/2.0-tf.log(s))
+		mean, s2 = tf.nn.moments(e, axes=[0])
+		re = tf.reduce_sum(-0.5+(mean**2+s2)/2.0-tf.log(s))
 		return re
 
 	def latent(self, batch_size):
