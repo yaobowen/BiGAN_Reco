@@ -63,7 +63,7 @@ class AGE_32(object):
 		self.g_step = tf.Variable(0, name='g_step', trainable=False)
 		decay_steps = int(self.decay_every) * int(self.total_N / self.batch_size)
 		self.decayed_lr = tf.train.exponential_decay(self.lr, 
-			self.e_step, decay_steps, 0.5, staircase=False, name="decayed_lr")
+			self.e_step, decay_steps, 0.5, staircase=True, name="decayed_lr")
 		self.e_optimizer = tf.train.AdamOptimizer(self.decayed_lr, beta1=0.5)\
 			.minimize(self.e_loss, var_list=self.e_vars, global_step=self.e_step)
 		self.g_optimizer = tf.train.AdamOptimizer(self.decayed_lr, beta1=0.5)\
