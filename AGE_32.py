@@ -51,8 +51,8 @@ class AGE_32(object):
 		all_trainables = tf.trainable_variables()
 		self.e_vars = [var for var in all_trainables if "Encoder" in var.name]
 		self.g_vars = [var for var in all_trainables if "Generator" in var.name]
-		print(len(e_vars))
-		print(len(g_vars))
+		print(len(self.e_vars))
+		print(len(self.g_vars))
 		self.e_step = tf.Variable(0, name="e_step", trainable=False)
 		self.g_step = tf.Variable(0, name='g_step', trainable=False)
 		self.e_optimizer = tf.train.AdamOptimizer(self.lr, beta1=0.5)\
