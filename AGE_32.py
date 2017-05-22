@@ -291,7 +291,7 @@ class AGE_32(object):
 
 def main():
 	data = input("what data to use? ")
-	n_epochs = 1
+	n_epochs = 30
 	if(data == "svhn"):
 		data_dir = "../SVHN_data"
 		log_dir = "../SVHN_log"
