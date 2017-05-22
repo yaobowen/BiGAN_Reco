@@ -92,7 +92,7 @@ class AGE_32(object):
 		data_batches = getMiniBatch(X_train, batch_size = self.batch_size)
 		counter = 0
 		for data_batch in data_batches:
-			print data_batch.shape
+			print(data_batch.shape)
 			latent_batch = self.latent(self.batch_size)
 			d = {self.x_placeholder:data_batch, self.z_placeholder:latent_batch}
 			self.sess.run([self.g_optimizer], feed_dict=d)
