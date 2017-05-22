@@ -62,6 +62,10 @@ class AGE_32(object):
 		self.gz_summary = tf.summary.image("generated image", self.gz[:12])
 		self.x_summary = tf.summary.image("real image", self.x_placeholder[:12])
 		self.gex_summary = tf.summary.image("reconstructed image", self.gex[:12])
+		mean, var = tf.nn.moments(self.egz, axes=[1])
+		self.mean_summary = tf.summary.histogram("component-wise mean", mean)
+		self.var_summary = tf.summary.histogram("component-wise var", var)
+		self.divergence_summary = tf.summary.scalar("divergence loss", self.divergence_loss)
 		self.e_loss_summary = tf.summary.scalar("encoder loss", self.e_loss)
 		self.g_loss_summary = tf.summary.scalar("generator loss", self.g_loss)
 		self.merged_summary = tf.summary.merge_all()
@@ -92,7 +96,8 @@ class AGE_32(object):
 
 			gl, _, gs= self.sess.run([self.g_loss_summary, self.g_optimizer, self.g_step], feed_dict=d)
 
-			el, _, es = self.sess.run([self.e_loss_summary, self.e_optimizer, self.e_step], feed_dict=d)
+			el, ds, ms, vs, _, es = self.sess.run([self.e_loss_summary, self.divergence_summary, 
+				self.mean_summary, self.var_summary, self.e_optimizer, self.e_step], feed_dict=d)
 
 			if(counter % 10 == 0):
 				print("processing: ", (100.0 * counter * self.batch_size / N, "%"))
@@ -104,6 +109,9 @@ class AGE_32(object):
 			else:
 				self.summary_writer.add_summary(gl, gs)
 				self.summary_writer.add_summary(el, es)
+				self.summary_writer.add_summary(ds, es)
+				self.summary_writer.add_summary(ms, es)
+				self.summary_writer.add_summary(vs, es)
 
 			counter += 1
 
@@ -129,6 +137,7 @@ class AGE_32(object):
 				kernel_size = 4, 
 				strides = 2,
 				padding = "same",
+				use_bias = False,
 				name = "conv1")
 			lrelu1 = lrelu(conv1, 0.2)
 			bn1 = tf.layers.batch_normalization(
@@ -143,6 +152,7 @@ class AGE_32(object):
 				kernel_size = 4, 
 				strides = 2,
 				padding = "same",
+				use_bias = False,
 				name = "conv2")
 			lrelu2 = lrelu(conv2, 0.2)
 			bn2 = tf.layers.batch_normalization(
@@ -157,6 +167,7 @@ class AGE_32(object):
 				kernel_size = 4, 
 				strides = 2,
 				padding = "same",
+				use_bias = False,
 				name = "conv3")
 			lrelu3 = lrelu(conv3, 0.2)
 			bn3 = tf.layers.batch_normalization(
@@ -171,6 +182,7 @@ class AGE_32(object):
 				kernel_size = 4, 
 				strides = 2,
 				padding = "same",
+				use_bias = True
 				name = "conv4")
 
 			#input size 2 * 2 * z_dim
@@ -197,6 +209,7 @@ class AGE_32(object):
 				kernel_size=4,
 				strides=1,
 				padding = "valid",
+				use_bias = False,
 				name="deconv1")
 			bn1 = tf.layers.batch_normalization(
 				inputs = deconv1,
@@ -211,6 +224,7 @@ class AGE_32(object):
 				kernel_size=4,
 				strides=2,
 				padding = "same",
+				use_bias = False,
 				name="deconv2")
 			bn2 = tf.layers.batch_normalization(
 				inputs = deconv2,
@@ -225,6 +239,7 @@ class AGE_32(object):
 				kernel_size=4,
 				strides=2,
 				padding = "same",
+				use_bias = False,
 				name="deconv3")
 			bn3 = tf.layers.batch_normalization(
 				inputs = deconv3,
@@ -239,6 +254,7 @@ class AGE_32(object):
 				kernel_size=4,
 				strides=2,
 				padding = "same",
+				use_bias = False,
 				name="deconv4")
 			bn4 = tf.layers.batch_normalization(
 				inputs = deconv4,
@@ -250,6 +266,7 @@ class AGE_32(object):
 			conv1 = tf.layers.conv2d(inputs = relu4,
 					filters = self.c_dim, 
 					kernel_size = 1,
+					use_bias = True,
 					name = "conv1")
 
 			#input size 32 * 32 * c_dim
