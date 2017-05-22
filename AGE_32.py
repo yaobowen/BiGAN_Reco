@@ -41,8 +41,8 @@ class AGE_32(object):
 
 		# add losses
 		self.divergence_loss = self.divergence(self.egz) - self.divergence(self.ex)
-		self.x_reconstruction_loss = tf.reduce_mean(tf.reduce_sum((self.x_placeholder-self.gex)**2, axis=[1,2,3]))
-		self.z_reconstruction_loss = tf.reduce_mean(tf.reduce_sum((self.z_placeholder-self.egz)**2, axis=[1]))
+		self.x_reconstruction_loss = tf.reduce_mean(tf.abs(self.x_placeholder-self.gex))
+		self.z_reconstruction_loss = tf.reduce_mean(tf.abs(self.z_placeholder-self.egz))
 
 		self.e_loss = -self.divergence_loss + self.miu * self.x_reconstruction_loss
 		self.g_loss = self.divergence_loss + self.lamb * self.z_reconstruction_loss
@@ -51,6 +51,8 @@ class AGE_32(object):
 		all_trainables = tf.trainable_variables()
 		self.e_vars = [var for var in all_trainables if "Encoder" in var.name]
 		self.g_vars = [var for var in all_trainables if "Generator" in var.name]
+		print(len(e_vars))
+		print(len(g_vars))
 		self.e_step = tf.Variable(0, name="e_step", trainable=False)
 		self.g_step = tf.Variable(0, name='g_step', trainable=False)
 		self.e_optimizer = tf.train.AdamOptimizer(self.lr, beta1=0.5)\
@@ -90,6 +92,7 @@ class AGE_32(object):
 		data_batches = getMiniBatch(X_train, batch_size = self.batch_size)
 		counter = 0
 		for data_batch in data_batches:
+			print data_batch.shape
 			latent_batch = self.latent(self.batch_size)
 			d = {self.x_placeholder:data_batch, self.z_placeholder:latent_batch}
 			self.sess.run([self.g_optimizer], feed_dict=d)
