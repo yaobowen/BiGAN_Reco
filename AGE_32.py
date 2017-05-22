@@ -110,8 +110,8 @@ class AGE_32(object):
 
 			gl, _, gs= self.sess.run([self.g_loss_summary, self.g_optimizer, self.g_step], feed_dict=d)
 
-			el, ds, ms, vs, _, es = self.sess.run([self.e_loss_summary, self.divergence_summary, 
-				self.mean_summary, self.var_summary, self.e_optimizer, self.e_step], feed_dict=d)
+			el, ds, ms, vs, lrs, _, es = self.sess.run([self.e_loss_summary, self.divergence_summary, 
+				self.mean_summary, self.var_summary, self.decayed_lr_summary, self.e_optimizer, self.e_step], feed_dict=d)
 
 			if(counter % 10 == 0):
 				print("processing: ", (100.0 * counter * self.batch_size / N, "%"))
@@ -126,6 +126,7 @@ class AGE_32(object):
 				self.summary_writer.add_summary(ds, es)
 				self.summary_writer.add_summary(ms, es)
 				self.summary_writer.add_summary(vs, es)
+				self.summary_writer.add_summary(lrs, es)
 
 			counter += 1
 
