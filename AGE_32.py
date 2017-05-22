@@ -96,8 +96,8 @@ class AGE_32(object):
 		for i in range(epochs):
 			print("training for epoch ", i)
 			self.run_epoch(X_train, X_val)
-		self.saver.save(self.sess, save_dir, global_step=self.e_step)
-		print("Model saved at", save_dir)
+		self.saver.save(self.sess, self.save_dir, global_step=self.e_step)
+		print("Model saved at", self.save_dir)
 
 	def run_epoch(self, X_train, X_val):
 		N = X_train.shape[0]
