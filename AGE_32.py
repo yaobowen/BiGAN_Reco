@@ -302,7 +302,7 @@ def main():
 		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
 		X_train = scale(X_train)
 		print("finish loading")
-		model = AGE_32(log_dir=log_dir, save_dir=save_dir, g_iter=3)
+		model = AGE_32(log_dir=log_dir, save_dir=save_dir, g_iter=3, miu=50, lamb=1000)
 	elif(data == "mnist"):
 		log_dir = "../MNIST_log"
 		save_dir = "../MNIST_check_points"
