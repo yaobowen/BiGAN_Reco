@@ -154,6 +154,7 @@ class AGE_32(object):
 				kernel_size = 4, 
 				strides = 2,
 				padding = "same",
+				kernel_initializer = tf.random_normal_initializer(stddev=0.02),
 				use_bias = False,
 				name = "conv1")
 			lrelu1 = lrelu(conv1, 0.2)
@@ -169,6 +170,7 @@ class AGE_32(object):
 				kernel_size = 4, 
 				strides = 2,
 				padding = "same",
+				kernel_initializer = tf.random_normal_initializer(stddev=0.02),
 				use_bias = False,
 				name = "conv2")
 			lrelu2 = lrelu(conv2, 0.2)
@@ -184,6 +186,7 @@ class AGE_32(object):
 				kernel_size = 4, 
 				strides = 2,
 				padding = "same",
+				kernel_initializer = tf.random_normal_initializer(stddev=0.02),
 				use_bias = False,
 				name = "conv3")
 			lrelu3 = lrelu(conv3, 0.2)
@@ -199,6 +202,7 @@ class AGE_32(object):
 				kernel_size = 4, 
 				strides = 2,
 				padding = "same",
+				kernel_initializer = tf.random_normal_initializer(stddev=0.02),
 				use_bias = True,
 				name = "conv4")
 
@@ -226,6 +230,7 @@ class AGE_32(object):
 				kernel_size=4,
 				strides=1,
 				padding = "valid",
+				kernel_initializer = tf.random_normal_initializer(stddev=0.02),
 				use_bias = False,
 				name="deconv1")
 			bn1 = tf.layers.batch_normalization(
@@ -241,6 +246,7 @@ class AGE_32(object):
 				kernel_size=4,
 				strides=2,
 				padding = "same",
+				kernel_initializer = tf.random_normal_initializer(stddev=0.02),
 				use_bias = False,
 				name="deconv2")
 			bn2 = tf.layers.batch_normalization(
@@ -256,6 +262,7 @@ class AGE_32(object):
 				kernel_size=4,
 				strides=2,
 				padding = "same",
+				kernel_initializer = tf.random_normal_initializer(stddev=0.02),
 				use_bias = False,
 				name="deconv3")
 			bn3 = tf.layers.batch_normalization(
@@ -271,6 +278,7 @@ class AGE_32(object):
 				kernel_size=4,
 				strides=2,
 				padding = "same",
+				kernel_initializer = tf.random_normal_initializer(stddev=0.02),
 				use_bias = False,
 				name="deconv4")
 			bn4 = tf.layers.batch_normalization(
@@ -283,6 +291,7 @@ class AGE_32(object):
 			conv1 = tf.layers.conv2d(inputs = relu4,
 					filters = self.c_dim, 
 					kernel_size = 1,
+					kernel_initializer = tf.random_normal_initializer(stddev=0.02),
 					use_bias = True,
 					name = "conv1")
 
