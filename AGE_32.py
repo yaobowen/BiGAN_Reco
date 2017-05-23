@@ -293,7 +293,7 @@ def main():
 	data = input("what data to use? ")
 	n_epochs = 30
 	if(data == "svhn"):
-		data_dir = "../SVHN_data"
+		data_dir = "../data_SVHN"
 		log_dir = "../SVHN_log"
 		save_dir = "../SVHN_check_points"
 		print("load data...")
