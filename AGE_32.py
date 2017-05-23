@@ -8,7 +8,7 @@ class AGE_32(object):
 
 	def __init__(self, input_h=32, input_w=32, output_h=32, output_w=32,\
 		z_dim = 64, df_dim = 64, gf_dim = 64, c_dim = 3, batch_size = 128, total_N = 55000, \
-		miu = 10, lamb = 500, lr = 2e-4, decay_every = 5, \
+		miu = 10, lamb = 500, lr = 2e-4, decay_every = 5, g_step = 2, \
 		log_dir = "../log", save_dir = "../check_points"):
 
 		self.input_h = input_h
@@ -26,6 +26,7 @@ class AGE_32(object):
 		self.lamb = lamb
 		self.lr = lr
 		self.decay_every = decay_every
+		self.g_step = g_step
 
 		self.log_dir = log_dir
 		self.save_dir = save_dir
@@ -106,7 +107,8 @@ class AGE_32(object):
 		for data_batch in data_batches:
 			latent_batch = self.latent(self.batch_size)
 			d = {self.x_placeholder:data_batch, self.z_placeholder:latent_batch}
-			self.sess.run([self.g_optimizer], feed_dict=d)
+			for i in range(self.g_step - 1):
+				self.sess.run([self.g_optimizer], feed_dict=d)
 
 			zr, _, gs= self.sess.run([self.z_reconstruction_loss_summary, self.g_optimizer, self.g_step], feed_dict=d)
 
@@ -300,7 +302,7 @@ def main():
 		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
 		X_train = scale(X_train)
 		print("finish loading")
-		model = AGE_32(log_dir=log_dir, save_dir=save_dir)
+		model = AGE_32(log_dir=log_dir, save_dir=save_dir, g_step=3)
 	elif(data == "mnist"):
 		log_dir = "../MNIST_log"
 		save_dir = "../MNIST_check_points"
