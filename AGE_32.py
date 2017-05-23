@@ -7,7 +7,7 @@ from tensorflow.examples.tutorials.mnist import input_data
 class AGE_32(object):
 
 	def __init__(self, input_h=32, input_w=32, output_h=32, output_w=32,\
-		z_dim = 10, df_dim = 64, gf_dim = 64, c_dim = 3, batch_size = 128, total_N = 55000, \
+		z_dim = 64, df_dim = 64, gf_dim = 64, c_dim = 3, batch_size = 128, total_N = 55000, \
 		miu = 10, lamb = 100, lr = 2e-4, decay_every = 5, \
 		log_dir = "../log", save_dir = "../check_points"):
 
@@ -314,7 +314,7 @@ def main():
 		X_val = np.expand_dims(X_val, 3)
 		X_train = scale(X_train)
 		print("finish loading")
-		model = AGE_32(log_dir=log_dir, save_dir=save_dir, c_dim=1)
+		model = AGE_32(log_dir=log_dir, save_dir=save_dir, c_dim=1, z_dim=10, lamb=100)
 
 	model.train(X_train, X_val, n_epochs)
 
