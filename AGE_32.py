@@ -45,7 +45,7 @@ class AGE_32(object):
 		# add losses
 		self.divergence_loss = self.divergence(self.egz) - self.divergence(self.ex)
 		self.x_reconstruction_loss = tf.reduce_mean(tf.abs(self.x_placeholder-self.gex))
-		self.z_reconstruction_loss = tf.reduce_mean(tf.abs(self.z_placeholder-self.egz))
+		self.z_reconstruction_loss = 2 - tf.reduce_mean(self.z_placeholder*self.egz)
 
 		self.e_loss = -self.divergence_loss + self.miu * self.x_reconstruction_loss
 		self.g_loss = self.divergence_loss + self.lamb * self.z_reconstruction_loss
