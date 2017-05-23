@@ -78,8 +78,8 @@ class AGE_32(object):
 		self.mean_summary = tf.summary.histogram("component-wise mean", mean)
 		self.var_summary = tf.summary.histogram("component-wise var", var)
 		self.divergence_summary = tf.summary.scalar("divergence loss", self.divergence_loss)
-		self.x_reconstruction_loss_summary = tf.summary.scalar("x reconstruction loss", self.x_reconstruction_loss)
-		self.z_reconstruction_loss_summary = tf.summary.scalar("z reconstruction loss", self.z_reconstruction_loss)
+		self.x_reconstruction_loss_summary = tf.summary.scalar("x reconstruction loss", self.miu * self.x_reconstruction_loss)
+		self.z_reconstruction_loss_summary = tf.summary.scalar("z reconstruction loss", self.lamb * self.z_reconstruction_loss)
 		self.decayed_lr_summary = tf.summary.scalar("decayed learning rate", self.decayed_lr)
 		self.merged_summary = tf.summary.merge_all()
 
