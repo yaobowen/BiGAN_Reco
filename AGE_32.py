@@ -8,7 +8,7 @@ class AGE_32(object):
 
 	def __init__(self, input_h=32, input_w=32, output_h=32, output_w=32,\
 		z_dim = 64, df_dim = 64, gf_dim = 64, c_dim = 3, batch_size = 128, total_N = 55000, \
-		miu = 10, lamb = 100, lr = 2e-4, decay_every = 5, \
+		miu = 10, lamb = 500, lr = 2e-4, decay_every = 5, \
 		log_dir = "../log", save_dir = "../check_points"):
 
 		self.input_h = input_h
