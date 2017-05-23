@@ -135,7 +135,7 @@ class AGE_32(object):
 
 	def divergence(self, e):
 		mean, s2 = tf.nn.moments(e, axes=[0])
-		re = tf.reduce_sum(-0.5+(mean**2+s2)/2.0-tf.log(s2**0.5))
+		re = tf.reduce_mean(-0.5+(mean**2+s2**2)/2.0-tf.log(s2))
 		return re
 
 	def latent(self, batch_size):
