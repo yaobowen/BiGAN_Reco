@@ -8,7 +8,7 @@ class AGE_32(object):
 
 	def __init__(self, input_h=32, input_w=32, output_h=32, output_w=32,\
 		z_dim = 64, df_dim = 64, gf_dim = 64, c_dim = 3, batch_size = 128, total_N = 55000, \
-		miu = 10, lamb = 500, lr = 2e-4, decay_every = 5, g_iter = 2, \
+		miu = 10, lamb = 1000, lr = 2e-4, decay_every = 5, g_iter = 2, \
 		log_dir = "../log", save_dir = "../check_points"):
 
 		self.input_h = input_h
@@ -45,7 +45,7 @@ class AGE_32(object):
 		# add losses
 		self.divergence_loss = self.divergence(self.egz) - self.divergence(self.ex)
 		self.x_reconstruction_loss = tf.reduce_mean(tf.abs(self.x_placeholder-self.gex))
-		self.z_reconstruction_loss = 2 - tf.reduce_mean(self.z_placeholder*self.egz)
+		self.z_reconstruction_loss = 1 - tf.reduce_mean(self.z_placeholder*self.egz)
 
 		self.e_loss = -self.divergence_loss + self.miu * self.x_reconstruction_loss
 		self.g_loss = self.divergence_loss + self.lamb * self.z_reconstruction_loss
