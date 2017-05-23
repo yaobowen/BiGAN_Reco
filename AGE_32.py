@@ -77,8 +77,8 @@ class AGE_32(object):
 		self.mean_summary = tf.summary.histogram("component-wise mean", mean)
 		self.var_summary = tf.summary.histogram("component-wise var", var)
 		self.divergence_summary = tf.summary.scalar("divergence loss", self.divergence_loss)
-		self.e_loss_summary = tf.summary.scalar("encoder loss", self.e_loss)
-		self.g_loss_summary = tf.summary.scalar("generator loss", self.g_loss)
+		self.x_reconstruction_loss_summary = tf.summary.scalar("x reconstruction loss", self.x_reconstruction_loss)
+		self.z_reconstruction_loss_summary = tf.summary.scalar("z reconstruction loss", self.z_reconstruction_loss)
 		self.decayed_lr_summary = tf.summary.scalar("decayed learning rate", self.decayed_lr)
 		self.merged_summary = tf.summary.merge_all()
 
@@ -108,9 +108,9 @@ class AGE_32(object):
 			d = {self.x_placeholder:data_batch, self.z_placeholder:latent_batch}
 			self.sess.run([self.g_optimizer], feed_dict=d)
 
-			gl, _, gs= self.sess.run([self.g_loss_summary, self.g_optimizer, self.g_step], feed_dict=d)
+			zr, _, gs= self.sess.run([self.z_reconstruction_loss_summary, self.g_optimizer, self.g_step], feed_dict=d)
 
-			el, ds, ms, vs, lrs, _, es = self.sess.run([self.e_loss_summary, self.divergence_summary, 
+			xr, ds, ms, vs, lrs, _, es = self.sess.run([self.x_reconstruction_loss_summary, self.divergence_summary, 
 				self.mean_summary, self.var_summary, self.decayed_lr_summary, self.e_optimizer, self.e_step], feed_dict=d)
 
 			if(counter % 10 == 0):
@@ -121,8 +121,8 @@ class AGE_32(object):
 				self.summary_writer.add_summary(b, es)
 				self.summary_writer.add_summary(c, es)
 			else:
-				self.summary_writer.add_summary(gl, gs)
-				self.summary_writer.add_summary(el, es)
+				self.summary_writer.add_summary(zr, gs)
+				self.summary_writer.add_summary(xr, es)
 				self.summary_writer.add_summary(ds, es)
 				self.summary_writer.add_summary(ms, es)
 				self.summary_writer.add_summary(vs, es)
