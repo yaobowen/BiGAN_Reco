@@ -339,7 +339,7 @@ def main():
 		X_val = np.expand_dims(X_val, 3)
 		X_train = scale(X_train)
 		print("finish loading")
-		model = AGE_32(log_dir=log_dir, save_dir=save_dir, c_dim=1, z_dim=10, miu=0, lamb=0)
+		model = AGE_32(log_dir=log_dir, save_dir=save_dir, c_dim=1, z_dim=10, miu=10, lamb=500)
 
 	model.train(X_train, X_val, n_epochs)
 
