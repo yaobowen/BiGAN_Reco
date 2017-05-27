@@ -36,7 +36,7 @@ class AGE_32(object):
 		self.x_placeholder = tf.placeholder(tf.float32, [None, None, None, self.c_dim], name="x_placeholder")
 		self.z_placeholder = tf.placeholder(tf.float32, [None, self.z_dim], name="z_placeholder")
 		#reshape and preprocess the input image
-		self.x = tf.image.resize_images(self.x_placeholder, [self.input_h, self.input_w], name="x")
+		self.x = tf.image.resize_images(self.x_placeholder, [self.input_h, self.input_w])
 
 
 		# add the transformed tensor
