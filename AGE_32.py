@@ -164,7 +164,7 @@ class AGE_32(object):
 
 			#input size 16 * 16 * df_dim
 			conv2 = tf.layers.conv2d(
-				inputs = bn1, 
+				inputs = lrelu1, 
 				filters = 2*self.df_dim, 
 				kernel_size = 4, 
 				strides = 2,
