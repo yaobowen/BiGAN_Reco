@@ -36,18 +36,18 @@ class AGE_32(object):
 		self.x_placeholder = tf.placeholder(tf.float32, [None, None, None, self.c_dim], name="x_placeholder")
 		self.z_placeholder = tf.placeholder(tf.float32, [None, self.z_dim], name="z_placeholder")
 		#reshape and preprocess the input image
-		self.x_placeholder = tf.image.resize_images(self.x_placeholder, [self.input_h, self.input_w])
+		self.x = tf.image.resize_images(self.x_placeholder, [self.input_h, self.input_w], name="x")
 
 
 		# add the transformed tensor
-		self.ex = self.encoder(self.x_placeholder)
+		self.ex = self.encoder(self.x)
 		self.gex = self.generator(self.ex)
 		self.gz = self.generator(self.z_placeholder, reuse = True)
 		self.egz = self.encoder(self.gz, reuse = True)
 
 		# add losses
 		self.divergence_loss = self.divergence(self.egz) - self.divergence(self.ex)
-		self.x_reconstruction_loss = tf.reduce_mean(tf.abs(self.x_placeholder-self.gex))
+		self.x_reconstruction_loss = tf.reduce_mean(tf.abs(self.x-self.gex))
 		self.z_reconstruction_loss = 1 - tf.reduce_mean(self.z_placeholder*self.egz)
 
 		self.e_loss = -self.divergence_loss + self.miu * self.x_reconstruction_loss
@@ -75,7 +75,7 @@ class AGE_32(object):
 
 		# add summary operation
 		self.gz_summary = tf.summary.image("generated image", self.gz)
-		self.x_summary = tf.summary.image("real image", self.x_placeholder)
+		self.x_summary = tf.summary.image("real image", self.x)
 		self.gex_summary = tf.summary.image("reconstructed image", self.gex)
 		mean, var = tf.nn.moments(self.egz, axes=[0])
 		self.mean_summary = tf.summary.histogram("component-wise mean", mean)
