@@ -57,12 +57,12 @@ class AGE_32(object):
 		all_trainables = tf.trainable_variables()
 		self.e_vars = [var for var in all_trainables if "Encoder" in var.name]
 		self.g_vars = [var for var in all_trainables if "Generator" in var.name]
-		print("Encoder variables:")
-		for var in self.e_vars:
-			print(var.name)
-		print("Generator variables:")
-		for var in self.g_vars:
-			print(var.name)
+		# print("Encoder variables:")
+		# for var in self.e_vars:
+		# 	print(var.name)
+		# print("Generator variables:")
+		# for var in self.g_vars:
+		# 	print(var.name)
 		self.e_step = tf.Variable(0, name="e_step", trainable=False)
 		self.g_step = tf.Variable(0, name='g_step', trainable=False)
 		decay_steps = int(self.decay_every) * int(self.total_N / self.batch_size)
@@ -174,6 +174,7 @@ class AGE_32(object):
 				name = "conv2")
 			bn2 = tf.layers.batch_normalization(
 				inputs = conv2,
+				gamma_initializer=tf.random_normal_initializer(mean=1.0, stddev=0.02),
 				axis = -1,
 				name = "bn2")
 			lrelu2 = lrelu(bn2, 0.2)
@@ -190,6 +191,7 @@ class AGE_32(object):
 				name = "conv3")
 			bn3 = tf.layers.batch_normalization(
 				inputs = conv3,
+				gamma_initializer=tf.random_normal_initializer(mean=1.0, stddev=0.02),
 				axis = -1,
 				name = "bn3")
 			lrelu3 = lrelu(bn3, 0.2)
@@ -234,6 +236,7 @@ class AGE_32(object):
 				name="deconv1")
 			bn1 = tf.layers.batch_normalization(
 				inputs = deconv1,
+				gamma_initializer=tf.random_normal_initializer(mean=1.0, stddev=0.02),
 				axis = -1,
 				name="bn1")
 			relu1 = tf.nn.relu(bn1, name="relu1")
@@ -250,6 +253,7 @@ class AGE_32(object):
 				name="deconv2")
 			bn2 = tf.layers.batch_normalization(
 				inputs = deconv2,
+				gamma_initializer=tf.random_normal_initializer(mean=1.0, stddev=0.02),
 				axis = -1,
 				name="bn2")	
 			relu2 = tf.nn.relu(bn2, name="relu2")	
@@ -266,6 +270,7 @@ class AGE_32(object):
 				name="deconv3")
 			bn3 = tf.layers.batch_normalization(
 				inputs = deconv3,
+				gamma_initializer=tf.random_normal_initializer(mean=1.0, stddev=0.02),
 				axis = -1,
 				name="bn3")				
 			relu3 = tf.nn.relu(bn3, name="relu3")
@@ -282,6 +287,7 @@ class AGE_32(object):
 				name="deconv4")
 			bn4 = tf.layers.batch_normalization(
 				inputs = deconv4,
+				gamma_initializer=tf.random_normal_initializer(mean=1.0, stddev=0.02),
 				axis = -1,
 				name="bn4")				
 			relu4 = tf.nn.relu(bn4, name="relu4")
