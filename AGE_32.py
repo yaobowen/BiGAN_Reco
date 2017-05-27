@@ -74,9 +74,9 @@ class AGE_32(object):
 			.minimize(self.g_loss, var_list=self.g_vars, global_step=self.g_step)
 
 		# add summary operation
-		self.gz_summary = tf.summary.image("generated image", self.gz)
-		self.x_summary = tf.summary.image("real image", self.x)
-		self.gex_summary = tf.summary.image("reconstructed image", self.gex)
+		self.gz_summary = tf.summary.image("generated image", self.gz, max_outputs=64)
+		self.x_summary = tf.summary.image("real image", self.x, max_outputs=64)
+		self.gex_summary = tf.summary.image("reconstructed image", self.gex, max_outputs=64)
 		mean, var = tf.nn.moments(self.egz, axes=[0])
 		self.mean_summary = tf.summary.histogram("component-wise mean", mean)
 		self.var_summary = tf.summary.histogram("component-wise var", var)
@@ -161,10 +161,6 @@ class AGE_32(object):
 				use_bias = False,
 				name = "conv1")
 			lrelu1 = lrelu(conv1, 0.2)
-			bn1 = tf.layers.batch_normalization(
-				inputs = lrelu1,
-				axis = -1,
-				name = "bn1")
 
 			#input size 16 * 16 * df_dim
 			conv2 = tf.layers.conv2d(
@@ -176,15 +172,15 @@ class AGE_32(object):
 				kernel_initializer = tf.random_normal_initializer(stddev=0.02),
 				use_bias = False,
 				name = "conv2")
-			lrelu2 = lrelu(conv2, 0.2)
 			bn2 = tf.layers.batch_normalization(
-				inputs = lrelu2,
+				inputs = conv2,
 				axis = -1,
 				name = "bn2")
+			lrelu2 = lrelu(bn2, 0.2)
 
 			#input size 8 * 8 * 2df_dim
 			conv3 = tf.layers.conv2d(
-				inputs = bn2, 
+				inputs = lrelu2, 
 				filters = 4*self.df_dim, 
 				kernel_size = 4, 
 				strides = 2,
@@ -192,15 +188,15 @@ class AGE_32(object):
 				kernel_initializer = tf.random_normal_initializer(stddev=0.02),
 				use_bias = False,
 				name = "conv3")
-			lrelu3 = lrelu(conv3, 0.2)
 			bn3 = tf.layers.batch_normalization(
-				inputs = lrelu3,
+				inputs = conv3,
 				axis = -1,
 				name = "bn3")
+			lrelu3 = lrelu(bn3, 0.2)
 
 			#input size 4 * 4 * * 4df_dim
 			conv4 = tf.layers.conv2d(
-				inputs = bn3, 
+				inputs = lrelu3, 
 				filters = self.z_dim, 
 				kernel_size = 4, 
 				strides = 2,
