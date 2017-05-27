@@ -33,8 +33,11 @@ class AGE_32(object):
 
 	def build(self):
 		# add placeholder for image x and latent variable z
-		self.x_placeholder = tf.placeholder(tf.float32, [None, self.input_h, self.input_w, self.c_dim], name="x_placeholder")
+		self.x_placeholder = tf.placeholder(tf.float32, [None, None, None, self.c_dim], name="x_placeholder")
 		self.z_placeholder = tf.placeholder(tf.float32, [None, self.z_dim], name="z_placeholder")
+		#reshape and preprocess the input image
+		self.x_placeholder = tf.image.resize_images(self.x_placeholder, [self.input_h, self.input_w])
+
 
 		# add the transformed tensor
 		self.ex = self.encoder(self.x_placeholder)
@@ -312,6 +315,15 @@ def main():
 		X_train = scale(X_train)
 		print("finish loading")
 		model = AGE_32(log_dir=log_dir, save_dir=save_dir, g_iter=3, miu=0, lamb=0)
+	elif(data == "imagenet"):
+		data_dir = "../data_imagenet"
+		log_dir = "../imagenet_log"
+		save_dir = "../imagenet_check_points"
+		print("load data...")
+		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
+		X_train = scale(X_train)
+		print("finish loading")
+		model = AGE_32(log_dir=log_dir, save_dir=save_dir, g_iter=2, miu=10, lamb=2000, z_dim=128)
 	elif(data == "mnist"):
 		log_dir = "../MNIST_log"
 		save_dir = "../MNIST_check_points"
@@ -319,8 +331,8 @@ def main():
 		mnist = input_data.read_data_sets("../MNIST_data/", one_hot=True)
 		X_train = np.reshape(mnist.train.images, [-1,28,28])
 		X_val = np.reshape(mnist.validation.images, [-1,28,28])
-		X_train = np.lib.pad(X_train,((0,0),(2,2),(2,2)),'constant',constant_values=((0,0),(0,0),(0,0)))
-		X_val = np.lib.pad(X_val,((0,0),(2,2),(2,2)),'constant',constant_values=((0,0),(0,0),(0,0)))
+		# X_train = np.lib.pad(X_train,((0,0),(2,2),(2,2)),'constant',constant_values=((0,0),(0,0),(0,0)))
+		# X_val = np.lib.pad(X_val,((0,0),(2,2),(2,2)),'constant',constant_values=((0,0),(0,0),(0,0)))
 		X_train = np.expand_dims(X_train, 3)
 		X_val = np.expand_dims(X_val, 3)
 		X_train = scale(X_train)
