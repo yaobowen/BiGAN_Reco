@@ -46,7 +46,9 @@ class AGE_32(object):
 		self.egz = self.encoder(self.gz, reuse = True)
 
 		# add losses
-		self.divergence_loss = self.divergence(self.egz) - self.divergence(self.ex)
+		self.fake_divergence = self.divergence(self.egz)
+		self.real_divergence = self.divergence(self.ex)
+		self.divergence_loss = self.fake_divergence - self.real_divergence
 		self.x_reconstruction_loss = tf.reduce_mean(tf.abs(self.x-self.gex))
 		self.z_reconstruction_loss = 1 - tf.reduce_mean(self.z_placeholder*self.egz)
 
@@ -80,7 +82,8 @@ class AGE_32(object):
 		mean, var = tf.nn.moments(self.egz, axes=[0])
 		self.mean_summary = tf.summary.histogram("component-wise mean", mean)
 		self.var_summary = tf.summary.histogram("component-wise var", var)
-		self.divergence_summary = tf.summary.scalar("divergence loss", self.divergence_loss)
+		self.real_divergence_summary = tf.summary.scalar("real divergence loss", self.real_divergence)
+		self.fake_divergence_summary = tf.summary.scalar("fake divergence loss", self.fake_divergence)
 		self.x_reconstruction_loss_summary = tf.summary.scalar("x reconstruction loss", self.miu * self.x_reconstruction_loss)
 		self.z_reconstruction_loss_summary = tf.summary.scalar("z reconstruction loss", self.lamb * self.z_reconstruction_loss)
 		self.decayed_lr_summary = tf.summary.scalar("decayed learning rate", self.decayed_lr)
@@ -115,7 +118,7 @@ class AGE_32(object):
 
 			zr, _, gs= self.sess.run([self.z_reconstruction_loss_summary, self.g_optimizer, self.g_step], feed_dict=d)
 
-			xr, ds, ms, vs, lrs, _, es = self.sess.run([self.x_reconstruction_loss_summary, self.divergence_summary, 
+			xr, rds, fds, ms, vs, lrs, _, es = self.sess.run([self.x_reconstruction_loss_summary, self.real_divergence_summary, self.fake_divergence_summary,
 				self.mean_summary, self.var_summary, self.decayed_lr_summary, self.e_optimizer, self.e_step], feed_dict=d)
 
 			if(counter % 10 == 0):
@@ -128,7 +131,8 @@ class AGE_32(object):
 			else:
 				self.summary_writer.add_summary(zr, gs)
 				self.summary_writer.add_summary(xr, es)
-				self.summary_writer.add_summary(ds, es)
+				self.summary_writer.add_summary(rds, es)
+				self.summary_writer.add_summary(fds, es)
 				self.summary_writer.add_summary(ms, es)
 				self.summary_writer.add_summary(vs, es)
 				self.summary_writer.add_summary(lrs, es)
