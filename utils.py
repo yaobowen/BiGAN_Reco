@@ -9,9 +9,9 @@ def lrelu(x, alpha):
 	return tf.maximum(alpha * x, x)
 
 def scale(x):
-    a = np.amax(x, axis = (1,2), keepdims=True)
-    b = np.amin(x, axis = (1,2), keepdims=True)
-    print(np.max(x), np.min(x))
+    a = np.amax(x)
+    b = np.amin(x)
+    print(a, b)
     return 2.0 * x / (b - a) - (b + a) / (b - a)
 
 def load(path, dtype=np.float64):
