@@ -52,8 +52,8 @@ class AGE_32(object):
 		self.x_reconstruction_loss = tf.reduce_mean(tf.abs(self.x-self.gex))
 		self.z_reconstruction_loss = 1 - tf.reduce_mean(self.z_placeholder*self.egz)
 
-		self.e_loss = -self.divergence_loss + self.miu * self.x_reconstruction_loss
-		self.g_loss = self.divergence_loss + self.lamb * self.z_reconstruction_loss
+		self.e_loss = self.real_divergence - self.fake_divergence + self.miu * self.x_reconstruction_loss
+		self.g_loss = self.fake_divergence + self.lamb * self.z_reconstruction_loss
 
 		# add optimizer
 		all_trainables = tf.trainable_variables()
@@ -76,8 +76,8 @@ class AGE_32(object):
 			.minimize(self.g_loss, var_list=self.g_vars, global_step=self.g_step)
 
 		# add summary operation
-		self.gz_summary = tf.summary.image("generated image", self.gz, max_outputs=64)
-		self.x_summary = tf.summary.image("real image", self.x, max_outputs=64)
+		self.gz_summary = tf.summary.image("generated image", self.gz, max_outputs=4)
+		self.x_summary = tf.summary.image("real image", self.x, max_outputs=4)
 		self.gex_summary = tf.summary.image("reconstructed image", self.gex, max_outputs=64)
 		mean, var = tf.nn.moments(self.egz, axes=[0])
 		self.mean_summary = tf.summary.histogram("component-wise mean", mean)
@@ -202,7 +202,7 @@ class AGE_32(object):
 				name = "bn3")
 			lrelu3 = lrelu(bn3, 0.2)
 
-			#input size 4 * 4 * * 4df_dim
+			#input size 4 * 4 * 4df_dim
 			conv4 = tf.layers.conv2d(
 				inputs = lrelu3, 
 				filters = self.z_dim, 
@@ -306,6 +306,7 @@ class AGE_32(object):
 			conv1 = tf.layers.conv2d(inputs = relu4,
 					filters = self.c_dim, 
 					kernel_size = 1,
+					strides = 1,
 					kernel_initializer = tf.random_normal_initializer(stddev=0.02),
 					use_bias = True,
 					name = "conv1")
