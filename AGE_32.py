@@ -175,6 +175,7 @@ class AGE_32(object):
 			bn2 = tf.layers.batch_normalization(
 				inputs = conv2,
 				gamma_initializer=tf.random_normal_initializer(mean=1.0, stddev=0.02),
+				momentum=0.1,
 				axis = -1,
 				name = "bn2")
 			lrelu2 = lrelu(bn2, 0.2)
@@ -192,6 +193,7 @@ class AGE_32(object):
 			bn3 = tf.layers.batch_normalization(
 				inputs = conv3,
 				gamma_initializer=tf.random_normal_initializer(mean=1.0, stddev=0.02),
+				momentum=0.1,
 				axis = -1,
 				name = "bn3")
 			lrelu3 = lrelu(bn3, 0.2)
@@ -237,6 +239,7 @@ class AGE_32(object):
 			bn1 = tf.layers.batch_normalization(
 				inputs = deconv1,
 				gamma_initializer=tf.random_normal_initializer(mean=1.0, stddev=0.02),
+				momentum=0.1,
 				axis = -1,
 				name="bn1")
 			relu1 = tf.nn.relu(bn1, name="relu1")
@@ -254,6 +257,7 @@ class AGE_32(object):
 			bn2 = tf.layers.batch_normalization(
 				inputs = deconv2,
 				gamma_initializer=tf.random_normal_initializer(mean=1.0, stddev=0.02),
+				momentum=0.1,
 				axis = -1,
 				name="bn2")	
 			relu2 = tf.nn.relu(bn2, name="relu2")	
@@ -271,6 +275,7 @@ class AGE_32(object):
 			bn3 = tf.layers.batch_normalization(
 				inputs = deconv3,
 				gamma_initializer=tf.random_normal_initializer(mean=1.0, stddev=0.02),
+				momentum=0.1,
 				axis = -1,
 				name="bn3")				
 			relu3 = tf.nn.relu(bn3, name="relu3")
@@ -288,6 +293,7 @@ class AGE_32(object):
 			bn4 = tf.layers.batch_normalization(
 				inputs = deconv4,
 				gamma_initializer=tf.random_normal_initializer(mean=1.0, stddev=0.02),
+				momentum=0.1,
 				axis = -1,
 				name="bn4")				
 			relu4 = tf.nn.relu(bn4, name="relu4")
@@ -316,7 +322,7 @@ def main():
 		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
 		X_train = scale(X_train)
 		print("finish loading")
-		model = AGE_32(log_dir=log_dir, save_dir=save_dir, g_iter=2, miu=10, lamb=1000)
+		model = AGE_32(log_dir=log_dir, save_dir=save_dir, g_iter=2, miu=10, lamb=1000, z_dim = 64)
 	elif(data == "imagenet"):
 		data_dir = "../data_imagenet"
 		log_dir = "../imagenet_log"
@@ -339,7 +345,7 @@ def main():
 		X_val = np.expand_dims(X_val, 3)
 		X_train = scale(X_train)
 		print("finish loading")
-		model = AGE_32(log_dir=log_dir, save_dir=save_dir, c_dim=1, z_dim=10, miu=10, lamb=500)
+		model = AGE_32(log_dir=log_dir, save_dir=save_dir, c_dim=1, miu=10, lamb=500, z_dim=10)
 
 	model.train(X_train, X_val, n_epochs)
 
