@@ -70,10 +70,13 @@ class AGE_32(object):
 		decay_steps = int(self.decay_every) * int(self.total_N / self.batch_size)
 		self.decayed_lr = tf.train.exponential_decay(self.lr, 
 			self.e_step, decay_steps, 0.5, staircase=True, name="decayed_lr")
-		self.e_optimizer = tf.train.AdamOptimizer(self.decayed_lr, beta1=0.5)\
-			.minimize(self.e_loss, var_list=self.e_vars, global_step=self.e_step)
-		self.g_optimizer = tf.train.AdamOptimizer(self.decayed_lr, beta1=0.5)\
-			.minimize(self.g_loss, var_list=self.g_vars, global_step=self.g_step)
+		extra_update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+		print(extra_update_ops)
+		with tf.control_dependencies(extra_update_ops):
+			self.e_optimizer = tf.train.AdamOptimizer(self.decayed_lr, beta1=0.5)\
+				.minimize(self.e_loss, var_list=self.e_vars, global_step=self.e_step)
+			self.g_optimizer = tf.train.AdamOptimizer(self.decayed_lr, beta1=0.5)\
+				.minimize(self.g_loss, var_list=self.g_vars, global_step=self.g_step)
 
 		# add summary operation
 		self.gz_summary = tf.summary.image("generated image", self.gz, max_outputs=4)
