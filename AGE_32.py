@@ -35,6 +35,7 @@ class AGE_32(object):
 		# add placeholder for image x and latent variable z
 		self.x_placeholder = tf.placeholder(tf.float32, [None, None, None, self.c_dim], name="x_placeholder")
 		self.z_placeholder = tf.placeholder(tf.float32, [None, self.z_dim], name="z_placeholder")
+		self.is_training = tf.placeholder(tf.bool)
 		#reshape and preprocess the input image
 		self.x = tf.image.resize_images(self.x_placeholder, [self.input_h, self.input_w])
 
@@ -115,7 +116,7 @@ class AGE_32(object):
 		counter = 0
 		for data_batch in data_batches:
 			latent_batch = self.latent(self.batch_size)
-			d = {self.x_placeholder:data_batch, self.z_placeholder:latent_batch}
+			d = {self.x_placeholder:data_batch, self.z_placeholder:latent_batch, self.is_training:True}
 			for i in range(self.g_iter - 1):
 				self.sess.run([self.g_optimizer], feed_dict=d)
 
