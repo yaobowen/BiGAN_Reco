@@ -185,6 +185,7 @@ class AGE_32(object):
 				gamma_initializer=tf.random_normal_initializer(mean=1.0, stddev=0.02),
 				momentum=0.1,
 				axis = -1,
+				trainable = self.is_training,
 				name = "bn2")
 			lrelu2 = lrelu(bn2, 0.2)
 
@@ -203,6 +204,7 @@ class AGE_32(object):
 				gamma_initializer=tf.random_normal_initializer(mean=1.0, stddev=0.02),
 				momentum=0.1,
 				axis = -1,
+				trainable = self.is_training,
 				name = "bn3")
 			lrelu3 = lrelu(bn3, 0.2)
 
@@ -249,6 +251,7 @@ class AGE_32(object):
 				gamma_initializer=tf.random_normal_initializer(mean=1.0, stddev=0.02),
 				momentum=0.1,
 				axis = -1,
+				trainable = self.is_training,
 				name="bn1")
 			relu1 = tf.nn.relu(bn1, name="relu1")
 
@@ -267,6 +270,7 @@ class AGE_32(object):
 				gamma_initializer=tf.random_normal_initializer(mean=1.0, stddev=0.02),
 				momentum=0.1,
 				axis = -1,
+				trainable = self.is_training,
 				name="bn2")	
 			relu2 = tf.nn.relu(bn2, name="relu2")	
 
@@ -285,6 +289,7 @@ class AGE_32(object):
 				gamma_initializer=tf.random_normal_initializer(mean=1.0, stddev=0.02),
 				momentum=0.1,
 				axis = -1,
+				trainable = self.is_training,
 				name="bn3")				
 			relu3 = tf.nn.relu(bn3, name="relu3")
 
@@ -303,6 +308,7 @@ class AGE_32(object):
 				gamma_initializer=tf.random_normal_initializer(mean=1.0, stddev=0.02),
 				momentum=0.1,
 				axis = -1,
+				trainable = self.is_training,
 				name="bn4")				
 			relu4 = tf.nn.relu(bn4, name="relu4")
 
