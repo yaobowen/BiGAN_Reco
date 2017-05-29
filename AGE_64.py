@@ -362,7 +362,7 @@ def main():
 		print("load data...")
 		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
 		print("finish loading")
-		model = AGE_32(log_dir=log_dir, save_dir=save_dir, g_iter=2, miu=10, lamb=1000, z_dim = 64)
+		model = AGE_64(log_dir=log_dir, save_dir=save_dir, g_iter=2, miu=10, lamb=1000, z_dim = 64)
 	elif(data == "imagenet"):
 		data_dir = "../data_imagenet"
 		log_dir = "../imagenet64_log"
@@ -370,7 +370,7 @@ def main():
 		print("load data...")
 		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
 		print("finish loading")
-		model = AGE_32(log_dir=log_dir, save_dir=save_dir, g_iter=2, miu=10, lamb=2000, z_dim=128)
+		model = AGE_64(log_dir=log_dir, save_dir=save_dir, g_iter=2, miu=10, lamb=2000, z_dim=128)
 	elif(data == "mnist"):
 		log_dir = "../MNIST64_log"
 		save_dir = "../MNIST64_check_points"
@@ -383,7 +383,7 @@ def main():
 		X_train = np.expand_dims(X_train, 3)
 		X_val = np.expand_dims(X_val, 3)
 		print("finish loading")
-		model = AGE_32(log_dir=log_dir, save_dir=save_dir, c_dim=1, miu=10, lamb=500, z_dim=10)
+		model = AGE_64(log_dir=log_dir, save_dir=save_dir, c_dim=1, miu=10, lamb=500, z_dim=10)
 
 	model.train(X_train, X_val, n_epochs)
 
