@@ -38,7 +38,7 @@ class AGE_32(object):
 		self.is_training = tf.placeholder(tf.bool)
 		#reshape and preprocess the input image
 		self.x = tf.image.resize_images(self.x_placeholder, [self.input_h, self.input_w])
-		self.x = self.scale(x)
+		self.x = self.scale(self.x)
 
 
 		# add the transformed tensor
