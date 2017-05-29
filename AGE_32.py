@@ -38,6 +38,7 @@ class AGE_32(object):
 		self.is_training = tf.placeholder(tf.bool)
 		#reshape and preprocess the input image
 		self.x = tf.image.resize_images(self.x_placeholder, [self.input_h, self.input_w])
+		self.x = self.scale(x)
 
 
 		# add the transformed tensor
@@ -80,9 +81,9 @@ class AGE_32(object):
 				.minimize(self.g_loss, var_list=self.g_vars, global_step=self.g_step)
 
 		# add summary operation
-		self.gz_summary = tf.summary.image("generated image", self.gz, max_outputs=4)
-		self.x_summary = tf.summary.image("real image", self.x, max_outputs=4)
-		self.gex_summary = tf.summary.image("reconstructed image", self.gex, max_outputs=64)
+		self.gz_summary = tf.summary.image("generated image", self.rescale(self.gz), max_outputs=4)
+		self.x_summary = tf.summary.image("real image", self.rescale(self.x), max_outputs=4)
+		self.gex_summary = tf.summary.image("reconstructed image", self.rescale(self.gex), max_outputs=64)
 		mean, var = tf.nn.moments(self.egz, axes=[0])
 		self.mean_summary = tf.summary.histogram("component-wise mean", mean)
 		self.var_summary = tf.summary.histogram("component-wise var", var)
@@ -106,8 +107,7 @@ class AGE_32(object):
 		self.sess.run(tf.global_variables_initializer())
 		for i in range(epochs):
 			print("training for epoch ", i)
-			with tf.device("/gpu:0"):
-				self.run_epoch(X_train, X_val)
+			self.run_epoch(X_train, X_val)
 		self.saver.save(self.sess, self.save_dir, global_step=self.e_step)
 		print("Model saved at", self.save_dir)
 
@@ -154,6 +154,12 @@ class AGE_32(object):
 		z = np.random.randn(batch_size, self.z_dim)
 		z /= np.linalg.norm(z, axis=1, keepdims=True)
 		return z
+
+	def scale(self, x):
+	    return x / 127.5 - 1
+
+	def rescale(self, y):
+		return (y + 1) * 127.5
 
 	def encoder(self, image, reuse = False, scope_str = "Encoder"):
 		with tf.variable_scope(scope_str) as scope:
@@ -336,7 +342,6 @@ def main():
 		save_dir = "../SVHN_check_points"
 		print("load data...")
 		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
-		X_train = scale(X_train)
 		print("finish loading")
 		model = AGE_32(log_dir=log_dir, save_dir=save_dir, g_iter=2, miu=10, lamb=1000, z_dim = 64)
 	elif(data == "imagenet"):
@@ -345,7 +350,6 @@ def main():
 		save_dir = "../imagenet_check_points"
 		print("load data...")
 		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
-		X_train = scale(X_train)
 		print("finish loading")
 		model = AGE_32(log_dir=log_dir, save_dir=save_dir, g_iter=2, miu=10, lamb=2000, z_dim=128)
 	elif(data == "mnist"):
@@ -359,7 +363,6 @@ def main():
 		# X_val = np.lib.pad(X_val,((0,0),(2,2),(2,2)),'constant',constant_values=((0,0),(0,0),(0,0)))
 		X_train = np.expand_dims(X_train, 3)
 		X_val = np.expand_dims(X_val, 3)
-		X_train = scale(X_train)
 		print("finish loading")
 		model = AGE_32(log_dir=log_dir, save_dir=save_dir, c_dim=1, miu=10, lamb=500, z_dim=10)
 
