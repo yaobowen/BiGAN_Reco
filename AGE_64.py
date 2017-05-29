@@ -357,23 +357,23 @@ def main():
 	n_epochs = 30
 	if(data == "svhn"):
 		data_dir = "../data_SVHN"
-		log_dir = "../SVHN_log"
-		save_dir = "../SVHN_check_points"
+		log_dir = "../SVHN64_log"
+		save_dir = "../SVHN64_check_points"
 		print("load data...")
 		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
 		print("finish loading")
 		model = AGE_32(log_dir=log_dir, save_dir=save_dir, g_iter=2, miu=10, lamb=1000, z_dim = 64)
 	elif(data == "imagenet"):
 		data_dir = "../data_imagenet"
-		log_dir = "../imagenet_log"
-		save_dir = "../imagenet_check_points"
+		log_dir = "../imagenet64_log"
+		save_dir = "../imagenet64_check_points"
 		print("load data...")
 		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
 		print("finish loading")
 		model = AGE_32(log_dir=log_dir, save_dir=save_dir, g_iter=2, miu=10, lamb=2000, z_dim=128)
 	elif(data == "mnist"):
-		log_dir = "../MNIST_log"
-		save_dir = "../MNIST_check_points"
+		log_dir = "../MNIST64_log"
+		save_dir = "../MNIST64_check_points"
 		print("load data...")
 		mnist = input_data.read_data_sets("../MNIST_data/", one_hot=True)
 		X_train = np.reshape(mnist.train.images, [-1,28,28])
