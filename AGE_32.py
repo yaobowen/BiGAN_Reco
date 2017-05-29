@@ -106,7 +106,8 @@ class AGE_32(object):
 		self.sess.run(tf.global_variables_initializer())
 		for i in range(epochs):
 			print("training for epoch ", i)
-			self.run_epoch(X_train, X_val)
+			with tf.device("/gpu:0"):
+				self.run_epoch(X_train, X_val)
 		self.saver.save(self.sess, self.save_dir, global_step=self.e_step)
 		print("Model saved at", self.save_dir)
 
