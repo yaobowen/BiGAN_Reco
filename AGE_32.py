@@ -83,7 +83,7 @@ class AGE_32(object):
 		# add summary operation
 		self.gz_summary = tf.summary.image("generated image", self.rescale(self.gz), max_outputs=4)
 		self.x_summary = tf.summary.image("real image", self.rescale(self.x), max_outputs=4)
-		self.gex_summary = tf.summary.image("reconstructed image", self.rescale(self.gex), max_outputs=64)
+		self.gex_summary = tf.summary.image("reconstructed image", self.rescale(self.gex), max_outputs=4)
 		mean, var = tf.nn.moments(self.egz, axes=[0])
 		self.mean_summary = tf.summary.histogram("component-wise mean", mean)
 		self.var_summary = tf.summary.histogram("component-wise var", var)
