@@ -107,11 +107,11 @@ class AGE_64(object):
 		self.sess.run(tf.global_variables_initializer())
 		for i in range(epochs):
 			print("training for epoch ", i)
-			self.run_epoch(X_train, X_val)
+			self.run_epoch(X_train, X_val, i)
 		self.saver.save(self.sess, self.save_dir, global_step=self.e_step)
 		print("Model saved at", self.save_dir)
 
-	def run_epoch(self, X_train, X_val):
+	def run_epoch(self, X_train, X_val, epoch):
 		N = X_train.shape[0]
 		data_batches = getMiniBatch(X_train, batch_size = self.batch_size)
 		counter = 0
@@ -127,7 +127,7 @@ class AGE_64(object):
 				self.mean_summary, self.var_summary, self.decayed_lr_summary, self.e_optimizer, self.e_step], feed_dict=d)
 
 			if(counter % 10 == 0):
-				print("processing: ", (100.0 * counter * self.batch_size / N, "%"))
+				print("[epoch "+str(epoch)+"]processing: "+str(100.0 * counter * self.batch_size / N)+"%" )
 				sys.stdout.flush()
 				a, b, c= self.sess.run([self.x_summary, self.gz_summary, self.gex_summary], feed_dict=d)
 				self.summary_writer.add_summary(a, es)
@@ -370,7 +370,7 @@ def main():
 		print("load data...")
 		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
 		print("finish loading")
-		model = AGE_64(log_dir=log_dir, save_dir=save_dir, g_iter=2, miu=10, lamb=2000, z_dim=128)
+		model = AGE_64(log_dir=log_dir, save_dir=save_dir, g_iter=2, miu=10, lamb=1000, z_dim=128)
 	elif(data == "mnist"):
 		log_dir = "../MNIST64_log"
 		save_dir = "../MNIST64_check_points"
