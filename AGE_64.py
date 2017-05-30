@@ -357,9 +357,9 @@ def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--dataset', required=True,
 	                    help='mnist | svhn | imagenet')
-	parser.add_argument('--save_dir', default='',
+	parser.add_argument('--save_dir', default='None',
 	                    help='folder to output model checkpoints')
-	parser.add_argument('--log_dir', default='', 
+	parser.add_argument('--log_dir', default='None', 
 						help='folder to output tensorboard log')
 	parser.add_argument('--save_every', default=5, type=int, help='')
 
@@ -409,9 +409,9 @@ def main():
 	else:
 		print('no such dataset!')
 		return	
-	if(len(opt.save_dir) == 0):
+	if(opt.save_dir == 'None'):
 		opt.save_dir = "../checkpoints/" + opt.dataset
-	if(len(opt.log_dir) == 0):
+	if(opt.log_dir == 'None'):
 		opt.log_dir = "../logs/" + opt.dataset
 	print("hahahahahahahhhhhhhhhhhhh")
 	print(opt.log_dir)
