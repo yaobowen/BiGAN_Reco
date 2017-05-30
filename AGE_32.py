@@ -3,6 +3,7 @@ from utils import *
 import time
 import sys
 from tensorflow.examples.tutorials.mnist import input_data
+import argparse
 
 class AGE_32(object):
 
@@ -99,7 +100,7 @@ class AGE_32(object):
 		self.summary_writer = tf.summary.FileWriter(self.log_dir, graph=self.sess.graph)
 		self.saver = tf.train.Saver()
 
-	def train(self, X_train, X_val, epochs):
+	def train(self, X_train, X_val, restore):
 		print("build models...")
 		s = time.time()
 		self.build()
@@ -115,7 +116,7 @@ class AGE_32(object):
 		self.saver.save(self.sess, self.save_dir, global_step=self.e_step)
 		print("Model saved at", self.save_dir)
 
-	def run_epoch(self, X_train, X_val):
+	def run_epoch(self, X_train, X_val, epoch):
 		N = X_train.shape[0]
 		data_batches = getMiniBatch(X_train, batch_size = self.batch_size)
 		counter = 0
@@ -131,7 +132,7 @@ class AGE_32(object):
 				self.mean_summary, self.var_summary, self.decayed_lr_summary, self.e_optimizer, self.e_step], feed_dict=d)
 
 			if(counter % 10 == 0):
-				print("processing: ", (100.0 * counter * self.batch_size / N, "%"))
+				print("[epoch "+str(epoch)+"]processing: "+str(100.0 * counter * self.batch_size / N)+"%" )
 				sys.stdout.flush()
 				a, b, c= self.sess.run([self.x_summary, self.gz_summary, self.gex_summary], feed_dict=d)
 				self.summary_writer.add_summary(a, es)
@@ -399,7 +400,7 @@ def main():
 		opt.save_dir = "../checkpoints/" + opt.dataset + "32/"
 	if(opt.log_dir == 'None'):
 		opt.log_dir = "../logs/" + opt.dataset + "32/"
-	model = AGE_64(batch_size=opt.batch_size, lr=opt.lr, decay_every=opt.drop_lr,
+	model = AGE_32(batch_size=opt.batch_size, lr=opt.lr, decay_every=opt.drop_lr,
 		log_dir=opt.log_dir, save_dir=opt.save_dir, 
 		c_dim=opt.c_dim, z_dim=opt.z_dim, 
 		miu=opt.miu, lamb=opt.lamb, g_iter=opt.g_step)
