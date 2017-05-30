@@ -413,6 +413,9 @@ def main():
 		opt.save_dir = "../checkpoints/" + opt.dataset
 	if(opt.log_dir == ""):
 		opt.log__dir = "../logs/" + opt.dataset
+	print("hahahahahahahhhhhhhhhhhhh")
+	print(opt.log_dir)
+	print("hahahahahahahhhhhhhhhhhhh")
 	model = AGE_64(batch_size=opt.batch_size, lr=opt.lr, decay_every=opt.drop_lr,
 		log_dir=opt.log_dir, save_dir=opt.save_dir, 
 		c_dim=opt.c_dim, z_dim=opt.z_dim, 
