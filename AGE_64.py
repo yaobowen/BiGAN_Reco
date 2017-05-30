@@ -106,7 +106,7 @@ class AGE_64(object):
 		self.build()
 		print("finish building, using ", time.time()-s, " seconds")
 		if(restore):
-			self.saver.restore(self.sess, self.save_dir)
+			self.saver.restore(self.sess, tf.train.latest_checkpoint(self.save_dir))
 		else:
 			self.sess.run(tf.global_variables_initializer())
 		for i in range(epochs):
@@ -414,7 +414,7 @@ def main():
 		print('no such dataset!')
 		return	
 	if(opt.save_dir == 'None'):
-		opt.save_dir = "../checkpoints/" + opt.dataset
+		opt.save_dir = "../checkpoints/" + opt.dataset + "/"
 	if(opt.log_dir == 'None'):
 		opt.log_dir = "../logs/" + opt.dataset
 	model = AGE_64(batch_size=opt.batch_size, lr=opt.lr, decay_every=opt.drop_lr,
