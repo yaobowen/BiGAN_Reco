@@ -3,6 +3,7 @@ from utils import *
 import time
 import sys
 from tensorflow.examples.tutorials.mnist import input_data
+import argparse
 
 class AGE_64(object):
 
@@ -353,40 +354,86 @@ class AGE_64(object):
 		return out	
 
 def main():
-	data = input("what data to use? ")
-	n_epochs = 6
-	if(data == "svhn"):
-		data_dir = "../data_SVHN"
-		log_dir = "../SVHN64_log"
-		save_dir = "../SVHN64_check_points"
-		print("load data...")
-		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
-		print("finish loading")
-		model = AGE_64(log_dir=log_dir, save_dir=save_dir, g_iter=2, miu=10, lamb=1000, z_dim = 64)
-	elif(data == "imagenet"):
-		data_dir = "../data_imagenet"
-		log_dir = "../imagenet64_log"
-		save_dir = "../imagenet64_check_points"
-		print("load data...")
-		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
-		print("finish loading")
-		model = AGE_64(log_dir=log_dir, save_dir=save_dir, g_iter=2, miu=10, lamb=1000, z_dim=128)
-	elif(data == "mnist"):
-		log_dir = "../MNIST64_log"
-		save_dir = "../MNIST64_check_points"
+	parser = argparse.ArgumentParser()
+	parser.add_argument('--dataset', required=True,
+	                    help='mnist | svhn | imagenet')
+	parser.add_argument('--save_dir', default='',
+	                    help='folder to output model checkpoints')
+	parser.add_argument('--log_dir', default='', 
+						help='folder to output tensorboard log')
+	parser.add_argument('--save_every', default=5, type=int, help='')
+
+
+	parser.add_argument('--z_dim', type=int, default=128,
+	                    help='size of the latent z vector, default is 128')
+	parser.add_argument('--ngf', type=int, default=64)
+	parser.add_argument('--ndf', type=int, default=64)
+	parser.add_argument('--c_dim', type=int)
+
+	parser.add_argument('--nepoch', type=int, default=25,
+	                    help='number of epochs to train for')
+	parser.add_argument('--lr', type=float, default=0.0002,
+	                    help='learning rate, default=0.0002')
+	parser.add_argument('--drop_lr', type=int, default=5, help='')
+	parser.add_argument('--batch_size', type=int,
+	                    default=64, help='batch size')
+
+	parser.add_argument('--lamb', type=int, default=1000)
+	parser.add_argument('--miu', type=int, default=10)
+	parser.add_argument('--g_step', type=int, default=2, help='steps to train generater per encoder train step, default is 2')
+
+	opt = parser.parse_args()		
+
+	if(opt.dataset == "mnist"):
 		print("load data...")
 		mnist = input_data.read_data_sets("../MNIST_data/", one_hot=True)
 		X_train = np.reshape(mnist.train.images, [-1,28,28])
 		X_val = np.reshape(mnist.validation.images, [-1,28,28])
-		# X_train = np.lib.pad(X_train,((0,0),(2,2),(2,2)),'constant',constant_values=((0,0),(0,0),(0,0)))
-		# X_val = np.lib.pad(X_val,((0,0),(2,2),(2,2)),'constant',constant_values=((0,0),(0,0),(0,0)))
 		X_train = np.expand_dims(X_train, 3)
 		X_val = np.expand_dims(X_val, 3)
 		print("finish loading")
-		model = AGE_64(log_dir=log_dir, save_dir=save_dir, c_dim=1, miu=10, lamb=500, z_dim=10)
-
-	model.train(X_train, X_val, n_epochs)
+	elif(opt.dataset == "imagenet"):
+		data_dir = "../data_imagenet"
+		print("load data...")
+		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
+		print("finish loading")
+	elif(opt.dataset == "svhn"):
+		print("load data...")
+		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
+		print("finish loading")
+	else:
+		print('no such dataset!')
+		return	
+	if(opt.save_dir == ""):
+		opt.save_dir = "../checkpoints/" + opt.dataset
+	if(opt.log_dir == ""):
+		opt.log__dir = "../logs/" + opt.dataset
+	model = AGE_64(batch_size=opt.batch_size, lr=opt.lr, decay_every=opt.drop_lr,
+		log_dir=opt.log_dir, save_dir=opt.save_dir, 
+		c_dim=opt.c_dim, z_dim=opt.z_dim, 
+		miu=opt.miu, lamb=opt.lamb, g_iter=opt.g_step)
+	model.train(X_train, X_val, opt.nepoch)
 
 if __name__ == "__main__":
 	main()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
