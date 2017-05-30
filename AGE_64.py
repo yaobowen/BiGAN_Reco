@@ -390,23 +390,24 @@ def main():
 
 	if(opt.dataset == "mnist"):
 		print("load data...")
-		mnist = input_data.read_data_sets("../MNIST_data/", one_hot=True)
+		mnist = input_data.read_data_sets("../data/MNIST_data/", one_hot=True)
 		X_train = np.reshape(mnist.train.images, [-1,28,28])
 		X_val = np.reshape(mnist.validation.images, [-1,28,28])
 		X_train = np.expand_dims(X_train, 3)
 		X_val = np.expand_dims(X_val, 3)
 		print("finish loading")
 	elif(opt.dataset == "imagenet"):
-		data_dir = "../data_imagenet"
+		data_dir = "../data/data_imagenet"
 		print("load data...")
 		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
 		print("finish loading")
 	elif(opt.dataset == "celeba"):
-		data_dir = "../data_celeba"
+		data_dir = "../data/data_celeba"
 		print("load data...")
 		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
 		print("finish loading")
 	elif(opt.dataset == "svhn"):
+		data_dir = "../data/data_svhn"
 		print("load data...")
 		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
 		print("finish loading")

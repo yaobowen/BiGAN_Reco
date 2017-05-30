@@ -371,29 +371,35 @@ def main():
 
 	if(opt.dataset == "mnist"):
 		print("load data...")
-		mnist = input_data.read_data_sets("../MNIST_data/", one_hot=True)
+		mnist = input_data.read_data_sets("../data/MNIST_data/", one_hot=True)
 		X_train = np.reshape(mnist.train.images, [-1,28,28])
 		X_val = np.reshape(mnist.validation.images, [-1,28,28])
 		X_train = np.expand_dims(X_train, 3)
 		X_val = np.expand_dims(X_val, 3)
 		print("finish loading")
 	elif(opt.dataset == "imagenet"):
-		data_dir = "../data_imagenet"
+		data_dir = "../data/data_imagenet"
+		print("load data...")
+		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
+		print("finish loading")
+	elif(opt.dataset == "celeba"):
+		data_dir = "../data/data_celeba"
 		print("load data...")
 		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
 		print("finish loading")
 	elif(opt.dataset == "svhn"):
+		data_dir = "../data/data_svhn"
 		print("load data...")
 		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
 		print("finish loading")
 	else:
 		print('no such dataset!')
 		return	
-	if(opt.save_dir == ""):
+	if(opt.save_dir == 'None'):
 		opt.save_dir = "../checkpoints/" + opt.dataset + "/"
-	if(opt.log_dir == ""):
-		opt.log__dir = "../logs/" + opt.dataset
-	model = AGE_32(batch_size=opt.batch_size, lr=opt.lr, decay_every=opt.drop_lr,
+	if(opt.log_dir == 'None'):
+		opt.log_dir = "../logs/" + opt.dataset
+	model = AGE_64(batch_size=opt.batch_size, lr=opt.lr, decay_every=opt.drop_lr,
 		log_dir=opt.log_dir, save_dir=opt.save_dir, 
 		c_dim=opt.c_dim, z_dim=opt.z_dim, 
 		miu=opt.miu, lamb=opt.lamb, g_iter=opt.g_step)
