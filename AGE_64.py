@@ -100,12 +100,15 @@ class AGE_64(object):
 		self.summary_writer = tf.summary.FileWriter(self.log_dir, graph=self.sess.graph)
 		self.saver = tf.train.Saver()
 
-	def train(self, X_train, X_val, epochs):
+	def train(self, X_train, X_val, epochs, restore):
 		print("build models...")
 		s = time.time()
 		self.build()
 		print("finish building, using ", time.time()-s, " seconds")
-		self.sess.run(tf.global_variables_initializer())
+		if(restore):
+			self.saver.restore(self.sess, self.save_dir)
+		else:
+			self.sess.run(tf.global_variables_initializer())
 		for i in range(epochs):
 			print("training for epoch ", i)
 			self.run_epoch(X_train, X_val, i)
@@ -362,6 +365,7 @@ def main():
 	parser.add_argument('--log_dir', default='None', 
 						help='folder to output tensorboard log')
 	parser.add_argument('--save_every', default=5, type=int, help='')
+	parser.add_argument('--restore', type=bool, default=False)
 
 
 	parser.add_argument('--z_dim', type=int, default=128,
@@ -413,9 +417,6 @@ def main():
 		opt.save_dir = "../checkpoints/" + opt.dataset
 	if(opt.log_dir == 'None'):
 		opt.log_dir = "../logs/" + opt.dataset
-	print("hahahahahahahhhhhhhhhhhhh")
-	print(opt.log_dir)
-	print("hahahahahahahhhhhhhhhhhhh")
 	model = AGE_64(batch_size=opt.batch_size, lr=opt.lr, decay_every=opt.drop_lr,
 		log_dir=opt.log_dir, save_dir=opt.save_dir, 
 		c_dim=opt.c_dim, z_dim=opt.z_dim, 
