@@ -409,9 +409,9 @@ def main():
 	else:
 		print('no such dataset!')
 		return	
-	if(opt.save_dir == ""):
+	if(opt.save_dir == ''):
 		opt.save_dir = "../checkpoints/" + opt.dataset
-	if(opt.log_dir == ""):
+	if(opt.log_dir == ''):
 		opt.log__dir = "../logs/" + opt.dataset
 	print("hahahahahahahhhhhhhhhhhhh")
 	print(opt.log_dir)
