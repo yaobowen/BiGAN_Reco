@@ -397,6 +397,11 @@ def main():
 		print("load data...")
 		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
 		print("finish loading")
+	elif(opt.dataset == "celeba"):
+		data_dir = "../data_celeba"
+		print("load data...")
+		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
+		print("finish loading")
 	elif(opt.dataset == "svhn"):
 		print("load data...")
 		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")

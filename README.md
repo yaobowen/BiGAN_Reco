@@ -17,7 +17,7 @@ for n in xrange(n_epochs):
 
 To run
 ```bash
-python AGE_64.py --dataset imagenet --c_dim 3 --z_dim 128 --miu 10 --lamb 500 --g_step 2
+python AGE_64.py --dataset imagenet --epoch 6 --drop_lr 3 --c_dim 3 --z_dim 128 --miu 10 --lamb 500 --g_step 2
 
-python AGE_64.py --dataset mnist --c_dim 1 --z_dim 10 --miu 10 --lamb 500 --g_step 2
+python AGE_32.py --dataset mnist --epoch 10 --drop_lr 5 --c_dim 1 --z_dim 10 --miu 10 --lamb 500 --g_step 2
 ```
