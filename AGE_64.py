@@ -354,7 +354,7 @@ class AGE_64(object):
 
 def main():
 	data = input("what data to use? ")
-	n_epochs = 30
+	n_epochs = 6
 	if(data == "svhn"):
 		data_dir = "../data_SVHN"
 		log_dir = "../SVHN64_log"
