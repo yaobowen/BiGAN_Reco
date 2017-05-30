@@ -100,7 +100,7 @@ class AGE_32(object):
 		self.summary_writer = tf.summary.FileWriter(self.log_dir, graph=self.sess.graph)
 		self.saver = tf.train.Saver()
 
-	def train(self, X_train, X_val, restore):
+	def train(self, X_train, X_val, epochs, restore):
 		print("build models...")
 		s = time.time()
 		self.build()
