@@ -113,7 +113,7 @@ class AGE_32(object):
 		for i in range(epochs):
 			print("training for epoch ", i)
 			self.run_epoch(X_train, X_val, i)
-		self.saver.save(self.sess, self.save_dir, global_step=self.e_step)
+		self.saver.save(self.sess, self.save_dir)
 		print("Model saved at", self.save_dir)
 
 	def run_epoch(self, X_train, X_val, epoch):
@@ -397,7 +397,7 @@ def main():
 		print('no such dataset!')
 		return	
 	if(opt.save_dir == 'None'):
-		opt.save_dir = "../checkpoints/" + opt.dataset + "64.ckpt"
+		opt.save_dir = "../checkpoints/" + opt.dataset + "32.ckpt"
 	if(opt.log_dir == 'None'):
 		opt.log_dir = "../logs/" + opt.dataset + "32/"
 	model = AGE_32(batch_size=opt.batch_size, lr=opt.lr, decay_every=opt.drop_lr,
