@@ -98,7 +98,7 @@ class AGE_32(object):
 		# add session, log writer and saver
 		self.sess = tf.Session()
 		self.summary_writer = tf.summary.FileWriter(self.log_dir, graph=self.sess.graph)
-		self.saver = tf.train.Saver()
+		self.saver = tf.train.Saver(write_version=tf.train.SaverDef.V1)
 
 	def train(self, X_train, X_val, epochs, restore):
 		print("build models...")
@@ -397,7 +397,7 @@ def main():
 		print('no such dataset!')
 		return	
 	if(opt.save_dir == 'None'):
-		opt.save_dir = "../checkpoints/" + opt.dataset + "32/"
+		opt.save_dir = "../checkpoints/" + opt.dataset + "64.ckpt"
 	if(opt.log_dir == 'None'):
 		opt.log_dir = "../logs/" + opt.dataset + "32/"
 	model = AGE_32(batch_size=opt.batch_size, lr=opt.lr, decay_every=opt.drop_lr,
