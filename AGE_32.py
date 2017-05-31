@@ -10,7 +10,7 @@ class AGE_32(object):
 	def __init__(self, input_h=32, input_w=32, output_h=32, output_w=32,\
 		z_dim = 64, df_dim = 64, gf_dim = 64, c_dim = 3, batch_size = 64, total_N = 55000, \
 		miu = 0, lamb = 0, lr = 2e-4, decay_every = 5, g_iter = 2, \
-		log_dir = "../log", save_dir = "../check_points"):
+		log_dir = "../log", save_dir = "../check_points", restore = False):
 
 		self.input_h = input_h
 		self.input_w = input_w
@@ -31,6 +31,11 @@ class AGE_32(object):
 
 		self.log_dir = log_dir
 		self.save_dir = save_dir
+
+		print("build models...")
+		s = time.time()
+		self.build(restore)
+		print("finish building, using ", time.time()-s, " seconds")
 
 	def build(self):
 		# add placeholder for image x and latent variable z
@@ -100,15 +105,13 @@ class AGE_32(object):
 		self.summary_writer = tf.summary.FileWriter(self.log_dir, graph=self.sess.graph)
 		self.saver = tf.train.Saver(write_version=tf.train.SaverDef.V1)
 
-	def train(self, X_train, X_val, epochs, restore):
-		print("build models...")
-		s = time.time()
-		self.build()
-		print("finish building, using ", time.time()-s, " seconds")
 		if(restore):
 			self.saver.restore(self.sess, self.save_dir)
+			print("Model restored from", self.save_dir)
 		else:
 			self.sess.run(tf.global_variables_initializer())
+
+	def train(self, X_train, X_val, epochs, restore):
 		for i in range(epochs):
 			print("training for epoch ", i)
 			self.run_epoch(X_train, X_val, i)
@@ -337,38 +340,7 @@ class AGE_32(object):
 
 		return out	
 
-def main():
-	parser = argparse.ArgumentParser()
-	parser.add_argument('--dataset', required=True,
-	                    help='mnist | svhn | imagenet')
-	parser.add_argument('--save_dir', default='None',
-	                    help='folder to output model checkpoints')
-	parser.add_argument('--log_dir', default='None', 
-						help='folder to output tensorboard log')
-	parser.add_argument('--save_every', default=5, type=int, help='')
-	parser.add_argument('--restore', type=bool, default=False)
-
-
-	parser.add_argument('--z_dim', type=int, default=128,
-	                    help='size of the latent z vector, default is 128')
-	parser.add_argument('--ngf', type=int, default=64)
-	parser.add_argument('--ndf', type=int, default=64)
-	parser.add_argument('--c_dim', type=int)
-
-	parser.add_argument('--nepoch', type=int, default=25,
-	                    help='number of epochs to train for')
-	parser.add_argument('--lr', type=float, default=0.0002,
-	                    help='learning rate, default=0.0002')
-	parser.add_argument('--drop_lr', type=int, default=5, help='')
-	parser.add_argument('--batch_size', type=int,
-	                    default=64, help='batch size')
-
-	parser.add_argument('--lamb', type=int, default=1000)
-	parser.add_argument('--miu', type=int, default=10)
-	parser.add_argument('--g_step', type=int, default=2, help='steps to train generater per encoder train step, default is 2')
-
-	opt = parser.parse_args()		
-
+def trainModel(opt):	
 	if(opt.dataset == "mnist"):
 		print("load data...")
 		mnist = input_data.read_data_sets("../data/MNIST_data/", one_hot=True)
@@ -399,12 +371,131 @@ def main():
 		opt.save_dir = "../checkpoints/" + opt.dataset + "32.ckpt"
 	if(opt.log_dir == 'None'):
 		opt.log_dir = "../logs/" + opt.dataset + "32/"
+
 	model = AGE_32(batch_size=opt.batch_size, lr=opt.lr, decay_every=opt.drop_lr,
 		log_dir=opt.log_dir, save_dir=opt.save_dir, 
 		c_dim=opt.c_dim, z_dim=opt.z_dim, 
-		miu=opt.miu, lamb=opt.lamb, g_iter=opt.g_step)
-	model.train(X_train, X_val, opt.nepoch, opt.restore)
+		miu=opt.miu, lamb=opt.lamb, g_iter=opt.g_step, restore=opt.restore)
+	model.train(X_train, X_val, opt.nepoch)
+	return model
+
+def sampleModel(opt):
+	if(opt.dataset == "mnist"):
+		print("load data...")
+		mnist = input_data.read_data_sets("../data/MNIST_data/", one_hot=True)
+		X_train = np.reshape(mnist.train.images, [-1,28,28])
+		X_val = np.reshape(mnist.validation.images, [-1,28,28])
+		X_train = np.expand_dims(X_train, 3)
+		X_val = np.expand_dims(X_val, 3)
+		print("finish loading")
+	elif(opt.dataset == "imagenet"):
+		data_dir = "../data/data_imagenet"
+		print("load data...")
+		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
+		print("finish loading")
+	elif(opt.dataset == "celeba"):
+		data_dir = "../data/data_celeba"
+		print("load data...")
+		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
+		print("finish loading")
+	elif(opt.dataset == "svhn"):
+		data_dir = "../data/data_svhn"
+		print("load data...")
+		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
+		print("finish loading")
+	else:
+		print('no such dataset!')
+		return	
+	if(opt.save_dir == 'None'):
+		opt.save_dir = "../checkpoints/" + opt.dataset + "32.ckpt"
+
+	model = AGE_32(save_dir=opt.save_dir, 
+		c_dim=opt.c_dim, z_dim=opt.z_dim, 
+		restore = True)
+	x, gex, gz = model.sample(X_val, opt.sample_size, opt.sample_seed)
+	return x, gex, gz
+
+def getEmbed(opt):
+	if(opt.dataset == "mnist"):
+		print("load data...")
+		mnist = input_data.read_data_sets("../data/MNIST_data/", one_hot=True)
+		X_train = np.reshape(mnist.train.images, [-1,28,28])
+		X_val = np.reshape(mnist.validation.images, [-1,28,28])
+		X_train = np.expand_dims(X_train, 3)
+		X_val = np.expand_dims(X_val, 3)
+		print("finish loading")
+	elif(opt.dataset == "imagenet"):
+		data_dir = "../data/data_imagenet"
+		print("load data...")
+		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
+		print("finish loading")
+	elif(opt.dataset == "celeba"):
+		data_dir = "../data/data_celeba"
+		print("load data...")
+		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
+		print("finish loading")
+	elif(opt.dataset == "svhn"):
+		data_dir = "../data/data_svhn"
+		print("load data...")
+		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
+		print("finish loading")
+	else:
+		print('no such dataset!')
+		return	
+	if(opt.save_dir == 'None'):
+		opt.save_dir = "../checkpoints/" + opt.dataset + "32.ckpt"
+
+	model = AGE_32(save_dir=opt.save_dir, 
+		c_dim=opt.c_dim, z_dim=opt.z_dim, 
+		restore = True)
+	embed = model.sess.run([model.ex], feed_dict={model.x_placeholder: X_val})
+	return embed
 
 if __name__ == "__main__":
-	main()
+	parser = argparse.ArgumentParser()
+	parser.add_argument('--dataset', required=True,
+	                    help='mnist | svhn | imagenet')
+	parser.add_argument('--mode', default='train', help='train | sample | test')
+
+	parser.add_argument('--z_dim', type=int, default=128,
+	                    help='size of the latent z vector, default is 128')
+	parser.add_argument('--ngf', type=int, default=64)
+	parser.add_argument('--ndf', type=int, default=64)
+	parser.add_argument('--c_dim', type=int)
+
+	#train mode params
+	parser.add_argument('--save_dir', default='None',
+	                    help='folder to output model checkpoints')
+	parser.add_argument('--log_dir', default='None', 
+						help='folder to output tensorboard log')
+	parser.add_argument('--save_every', default=5, type=int, help='')
+	parser.add_argument('--restore', type=bool, default=False)
+
+	parser.add_argument('--nepoch', type=int, default=25,
+	                    help='number of epochs to train for')
+	parser.add_argument('--lr', type=float, default=0.0002,
+	                    help='learning rate, default=0.0002')
+	parser.add_argument('--drop_lr', type=int, default=5, help='')
+	parser.add_argument('--batch_size', type=int,
+	                    default=64, help='batch size')
+
+	parser.add_argument('--lamb', type=int, default=1000)
+	parser.add_argument('--miu', type=int, default=10)
+	parser.add_argument('--g_step', type=int, default=2, help='steps to train generater per encoder train step, default is 2')
+
+	#sample mode params
+	parser.add_argument('--sample_size', type=int, default=8, help='grid size to sample')
+	parser.add_argument('--sample_seed', type=int, default=123, help='seed to use when generate noise')
+
+	opt = parser.parse_args()
+	if(opt.mode == 'train'):
+		trainModel(opt)
+	elif(opt.mode == 'sample'):
+		x, gex, gz = sampleModel(opt)
+		np.save("x.npy", x)
+		np.save("gex.npy", gex)
+		np.save("gz.npy", gz)
+	elif(opt.mode == 'test'):
+		embed = getEmbed(opt)
+		np.save("embed.npy", embed)
 
