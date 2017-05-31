@@ -24,5 +24,5 @@ python AGE_32.py --dataset mnist --c_dim 1 --z_dim 10 --nepoch 10 --drop_lr 5 --
 
 To sample
 ```bash
-python AGE_64.py --mode sample --dataset imagenet --c_dim 3 --z_dim 128 --sample_size 8 --sample_seed 123
+python AGE_32.py --mode sample --dataset imagenet --c_dim 3 --z_dim 128 --sample_size 8 --sample_seed 123
 ```

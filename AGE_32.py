@@ -37,7 +37,7 @@ class AGE_32(object):
 		self.build(restore)
 		print("finish building, using ", time.time()-s, " seconds")
 
-	def build(self):
+	def build(self, restore):
 		# add placeholder for image x and latent variable z
 		self.x_placeholder = tf.placeholder(tf.float32, [None, None, None, self.c_dim], name="x_placeholder")
 		self.z_placeholder = tf.placeholder(tf.float32, [None, self.z_dim], name="z_placeholder")
