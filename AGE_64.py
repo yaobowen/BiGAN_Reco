@@ -417,7 +417,7 @@ def main():
 	if(opt.save_dir == 'None'):
 		opt.save_dir = "../checkpoints/" + opt.dataset + "64.ckpt"
 	if(opt.log_dir == 'None'):
-		opt.log_dir = "../logs/" + opt.dataset + "64.ckpt"
+		opt.log_dir = "../logs/" + opt.dataset + "64/"
 	model = AGE_64(batch_size=opt.batch_size, lr=opt.lr, decay_every=opt.drop_lr,
 		log_dir=opt.log_dir, save_dir=opt.save_dir, 
 		c_dim=opt.c_dim, z_dim=opt.z_dim, 
