@@ -168,6 +168,13 @@ class AGE_32(object):
 	def rescale(self, y):
 		return (y + 1) * 127.5
 
+	def sample(self, x, sample_size, sample_seed):
+		z = self.latent(size * size)
+		d = {self.x_placeholder: x[sample_size * sample_size], self.z_placeholder: z}
+		x, gex, gz = self.sess.run([self.rescale(self.x), self.rescale(self.gex), self.rescale(self.gz)], 
+				feed_dict=d) 
+		return x, gex, gz
+
 	def encoder(self, image, reuse = False, scope_str = "Encoder"):
 		with tf.variable_scope(scope_str) as scope:
 			if(reuse):
