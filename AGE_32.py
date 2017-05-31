@@ -107,7 +107,6 @@ class AGE_32(object):
 		print("finish building, using ", time.time()-s, " seconds")
 		if(restore):
 			self.saver.restore(self.sess, self.save_dir)
-			self.saver.restore(self.sess, tf.train.latest_checkpoint(self.save_dir))
 		else:
 			self.sess.run(tf.global_variables_initializer())
 		for i in range(epochs):
