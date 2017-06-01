@@ -163,7 +163,7 @@ class AGE_64(object):
 		return z
 
 	def scale(self, x):
-	    return x / 127.5 - 1
+		return x / 127.5 - 1
 
 	def rescale(self, y):
 		return (y + 1) * 127.5
@@ -497,30 +497,30 @@ def getEmbed(opt):
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--dataset', required=True,
-	                    help='mnist | svhn | imagenet')
+						help='mnist | svhn | imagenet')
 	parser.add_argument('--mode', default='train', help='train | sample | test')
 
 	parser.add_argument('--z_dim', type=int, default=128,
-	                    help='size of the latent z vector, default is 128')
+						help='size of the latent z vector, default is 128')
 	parser.add_argument('--ngf', type=int, default=64)
 	parser.add_argument('--ndf', type=int, default=64)
 	parser.add_argument('--c_dim', type=int)
 
 	#train mode params
 	parser.add_argument('--save_dir', default='None',
-	                    help='folder to output model checkpoints')
+						help='folder to output model checkpoints')
 	parser.add_argument('--log_dir', default='None', 
 						help='folder to output tensorboard log')
 	parser.add_argument('--save_every', default=5, type=int, help='')
 	parser.add_argument('--restore', type=bool, default=False)
 
 	parser.add_argument('--nepoch', type=int, default=25,
-	                    help='number of epochs to train for')
+						help='number of epochs to train for')
 	parser.add_argument('--lr', type=float, default=0.0002,
-	                    help='learning rate, default=0.0002')
+						help='learning rate, default=0.0002')
 	parser.add_argument('--drop_lr', type=int, default=5, help='')
 	parser.add_argument('--batch_size', type=int,
-	                    default=64, help='batch size')
+						default=64, help='batch size')
 
 	parser.add_argument('--lamb', type=int, default=1000)
 	parser.add_argument('--miu', type=int, default=10)
@@ -537,14 +537,14 @@ if __name__ == "__main__":
 	elif(opt.mode == 'sample'):
 		x, gex, gz = sampleModel(opt)
 		if(not os.path.exists(opt.output_dir)):
-    		os.makedirs(opt.output_dir)
+			os.makedirs(opt.output_dir)
 		np.save(os.path.join(opt.output_dir, "x.npy"), x)
 		np.save(os.path.join(opt.output_dir, "gex.npy"), gex)
 		np.save(os.path.join(opt.output_dir, "gz.npy"), gz)
 	elif(opt.mode == 'test'):
 		embed_train, embed_val = getEmbed(opt)
 		if(not os.path.exists(opt.output_dir)):
-    		os.makedirs(opt.output_dir)
+			os.makedirs(opt.output_dir)
 		np.save(os.path.join(opt.output_dir, "embed_train.npy"), embed_train)
 		np.save(os.path.join(opt.output_dir, "embed_val.npy"), embed_val)
 
