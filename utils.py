@@ -221,7 +221,7 @@ def showsample(x, gap = 2, out_put_file_name = "output_sample.jpg"):
             im.thumbnail((H - gap, W - gap))
             background.paste(im, (j,i))
             k += 1
-    background.show()
+    # background.show()
     background.save(out_put_file_name)
 
 # input x,y should both have a shpe of (N^2 / 2, H, W, C)

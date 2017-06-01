@@ -4,6 +4,7 @@ import time
 import sys
 from tensorflow.examples.tutorials.mnist import input_data
 import argparse
+import os
 
 class AGE_64(object):
 
@@ -437,6 +438,8 @@ def sampleModel(opt):
 		return	
 	if(opt.save_dir == 'None'):
 		opt.save_dir = "../checkpoints/" + opt.dataset + "64.ckpt"
+	if(opt.output_dir == 'None'):
+		opt.save_dir = "../output/" + opt.dataset + "64"
 
 	model = AGE_64(save_dir=opt.save_dir, 
 		c_dim=opt.c_dim, z_dim=opt.z_dim, 
@@ -473,12 +476,15 @@ def getEmbed(opt):
 		return	
 	if(opt.save_dir == 'None'):
 		opt.save_dir = "../checkpoints/" + opt.dataset + "64.ckpt"
+	if(opt.output_dir == 'None'):
+		opt.save_dir = "../output/" + opt.dataset + "64"
 
 	model = AGE_64(save_dir=opt.save_dir, 
 		c_dim=opt.c_dim, z_dim=opt.z_dim, 
 		restore = True)
-	embed = model.sess.run([model.ex], feed_dict={model.x_placeholder: X_val, model.is_training: False})
-	return embed
+	embed_train = model.sess.run([model.ex], feed_dict={model.x_placeholder: X_train, model.is_training: False})[0]
+	embed_val = model.sess.run([model.ex], feed_dict={model.x_placeholder: X_val, model.is_training: False})[0]
+	return embed_train, embed_val
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
@@ -512,21 +518,23 @@ if __name__ == "__main__":
 	parser.add_argument('--miu', type=int, default=10)
 	parser.add_argument('--g_step', type=int, default=2, help='steps to train generater per encoder train step, default is 2')
 
-	#sample mode params
+	#sample or test mode params
 	parser.add_argument('--sample_size', type=int, default=8, help='grid size to sample')
 	parser.add_argument('--sample_seed', type=int, default=123, help='seed to use when generate noise')
+	parser.add_argument('--output_dir', default="None")
 
 	opt = parser.parse_args()
 	if(opt.mode == 'train'):
 		trainModel(opt)
 	elif(opt.mode == 'sample'):
 		x, gex, gz = sampleModel(opt)
-		np.save("x.npy", x)
-		np.save("gex.npy", gex)
-		np.save("gz.npy", gz)
+		np.save(os.path.join(opt.output_dir, "x.npy"), x)
+		np.save(os.path.join(opt.output_dir, "gex.npy"), gex)
+		np.save(os.path.join(opt.output_dir, "gz.npy"), gz)
 	elif(opt.mode == 'test'):
-		embed = getEmbed(opt)
-		np.save("embed.npy", embed)
+		embed_train, embed_val = getEmbed(opt)
+		np.save(os.path.join(opt.output_dir, "embed_train.npy"), embed_train)
+		np.save(os.path.join(opt.output_dir, "embed_val.npy"), embed_val)
 
 
 

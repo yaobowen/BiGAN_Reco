@@ -26,3 +26,8 @@ To sample
 ```bash
 python AGE_32.py --mode sample --dataset imagenet --c_dim 3 --z_dim 128 --sample_size 8 --sample_seed 123
 ```
+
+To get embed
+```bash
+python AGE_32.py --mode test --dataset imagenet --c_dim 3 --z_dim 128
+```
