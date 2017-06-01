@@ -11,7 +11,7 @@ class AGE_64(object):
 	def __init__(self, input_h=64, input_w=64, output_h=64, output_w=64,\
 		z_dim = 64, df_dim = 64, gf_dim = 64, c_dim = 3, batch_size = 64, total_N = 55000, \
 		miu = 0, lamb = 0, lr = 2e-4, decay_every = 5, g_iter = 2, \
-		log_dir = "../log", save_dir = "../check_points", restore = False):
+		log_dir = "../logs", save_dir = "../check_points", restore = False):
 
 		self.input_h = input_h
 		self.input_w = input_w
