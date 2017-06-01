@@ -481,7 +481,15 @@ def getEmbed(opt):
 	model = AGE_64(save_dir=opt.save_dir, 
 		c_dim=opt.c_dim, z_dim=opt.z_dim, 
 		restore = True)
-	embed_train = model.sess.run([model.ex], feed_dict={model.x_placeholder: X_train, model.is_training: False})[0]
+
+	data_batches = getMiniBatch(X_train, batch_size=10000)
+	counter = 0
+	for data_batch in data_batches:
+		if(counter == 0):
+			embed_train = model.sess.run([model.ex], feed_dict={model.x_placeholder: data_batch, model.is_training: False})[0]
+		else:
+			temp = model.sess.run([model.ex], feed_dict={model.x_placeholder: data_batch, model.is_training: False})[0]
+			embed_train = np.concatenate((embed_train, temp), axis=0)
 	embed_val = model.sess.run([model.ex], feed_dict={model.x_placeholder: X_val, model.is_training: False})[0]
 	return embed_train, embed_val
 
