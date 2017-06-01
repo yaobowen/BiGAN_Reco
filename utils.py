@@ -208,7 +208,7 @@ def generate_toy(dtype=np.float64, size = 5):
 
 
 # input x should have a shpe of (N^2, H, W, C)
-def showsample(x, gap = 2, output_dir="./"):
+def showsample(x, gap = 2, output_file='sample.jpg'):
     N = x.shape[0]
     H = x.shape[1]
     W = x.shape[2]
@@ -222,13 +222,13 @@ def showsample(x, gap = 2, output_dir="./"):
             background.paste(im, (j,i))
             k += 1
     # background.show()
-    background.save(os.path.join(output_dir, 'output_sample.jpg'))
+    background.save(output_file)
 
 # input x,y should both have a shpe of (N^2 / 2, H, W, C)
-def showcompare(x, y, gap = 2, output_dir="./"):
+def showcompare(x, y, gap = 2, output_file='reconstruction.jpg'):
     N = x.shape[0]
     H = x.shape[1]
     W = x.shape[2]
     index = np.array([(ind, ind + N) for ind in range(N)]).reshape(-1, )
     sample = np.concatenate((x, y), axis = 0)[index]
-    showsample(sample, gap, output_dir)
+    showsample(sample, gap, output_file)

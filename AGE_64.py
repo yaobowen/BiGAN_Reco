@@ -541,8 +541,8 @@ if __name__ == "__main__":
 		# np.save(os.path.join(opt.output_dir, "x.npy"), x)
 		# np.save(os.path.join(opt.output_dir, "gex.npy"), gex)
 		# np.save(os.path.join(opt.output_dir, "gz.npy"), gz)
-		showsample(gz, output_dir=opt.output_dir)
-		showcompare(x, gex, output_dir=opt.output_dir)
+		showsample(gz, output_file=os.path.join(opt.output_dir, 'sample.jpg'))
+		showcompare(x, gex, output_file=os.path.join(opt.output_dir, 'reconstruction.jpg'))
 	elif(opt.mode == 'test'):
 		embed_train, embed_val = getEmbed(opt)
 		if(not os.path.exists(opt.output_dir)):
