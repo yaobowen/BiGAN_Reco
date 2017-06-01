@@ -418,7 +418,7 @@ def sampleModel(opt):
 	if(opt.save_dir == 'None'):
 		opt.save_dir = "../checkpoints/" + opt.dataset + "32.ckpt"
 	if(opt.output_dir == 'None'):
-		opt.save_dir = "../output/" + opt.dataset + "32"
+		opt.output_dir = "../output/" + opt.dataset + "32"
 
 	model = AGE_32(save_dir=opt.save_dir, 
 		c_dim=opt.c_dim, z_dim=opt.z_dim, 
@@ -456,7 +456,7 @@ def getEmbed(opt):
 	if(opt.save_dir == 'None'):
 		opt.save_dir = "../checkpoints/" + opt.dataset + "32.ckpt"
 	if(opt.output_dir == 'None'):
-		opt.save_dir = "../output/" + opt.dataset + "32"
+		opt.output_dir = "../output/" + opt.dataset + "32"
 
 	model = AGE_32(save_dir=opt.save_dir, 
 		c_dim=opt.c_dim, z_dim=opt.z_dim, 
