@@ -80,7 +80,6 @@ class AGE_32(object):
 		self.decayed_lr = tf.train.exponential_decay(self.lr, 
 			self.e_step, decay_steps, 0.5, staircase=True, name="decayed_lr")
 		extra_update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
-		print(extra_update_ops)
 		with tf.control_dependencies(extra_update_ops):
 			self.e_optimizer = tf.train.AdamOptimizer(self.decayed_lr, beta1=0.5)\
 				.minimize(self.e_loss, var_list=self.e_vars, global_step=self.e_step)
