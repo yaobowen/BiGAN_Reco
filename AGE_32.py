@@ -170,8 +170,7 @@ class AGE_32(object):
 
 	def sample(self, x, sample_size, sample_seed):
 		z = self.latent(sample_size * sample_size)
-		print(x.shape)
-		d = {self.x_placeholder: x[sample_size*sample_size, :, :, :], self.z_placeholder: z}
+		d = {self.x_placeholder: x[:sample_size*sample_size, :, :, :], self.z_placeholder: z}
 		x, gex, gz = self.sess.run([self.rescale(self.x), self.rescale(self.gex), self.rescale(self.gz)], 
 				feed_dict=d) 
 		return x, gex, gz
