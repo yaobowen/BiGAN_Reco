@@ -538,9 +538,11 @@ if __name__ == "__main__":
 		x, gex, gz = sampleModel(opt)
 		if(not os.path.exists(opt.output_dir)):
 			os.makedirs(opt.output_dir)
-		np.save(os.path.join(opt.output_dir, "x.npy"), x)
-		np.save(os.path.join(opt.output_dir, "gex.npy"), gex)
-		np.save(os.path.join(opt.output_dir, "gz.npy"), gz)
+		# np.save(os.path.join(opt.output_dir, "x.npy"), x)
+		# np.save(os.path.join(opt.output_dir, "gex.npy"), gex)
+		# np.save(os.path.join(opt.output_dir, "gz.npy"), gz)
+		showsample(gz, output_dir=opt.output_dir)
+		showcompare(x, gex, output_dir=opt.output_dir)
 	elif(opt.mode == 'test'):
 		embed_train, embed_val = getEmbed(opt)
 		if(not os.path.exists(opt.output_dir)):
