@@ -384,7 +384,7 @@ def trainModel(opt):
 		log_dir=opt.log_dir, save_dir=opt.save_dir, 
 		c_dim=opt.c_dim, z_dim=opt.z_dim, 
 		miu=opt.miu, lamb=opt.lamb, g_iter=opt.g_step, restore=opt.restore)
-	model.train(X_train, X_val, opt.nepoch)
+	model.train(X_train, X_val, opt.nepoch, opt.restore)
 	return model
 
 def sampleModel(opt):
