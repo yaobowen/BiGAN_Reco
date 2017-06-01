@@ -4,6 +4,7 @@ import numpy as np
 import os
 from scipy.misc import imread
 import math
+from PIL import Image, ImageOps
 
 def lrelu(x, alpha):
 	return tf.maximum(alpha * x, x)
@@ -204,3 +205,30 @@ def generate_toy(dtype=np.float64, size = 5):
     x = size - 1
     toyindex = np.repeat(arr, x + 1) + np.tile(np.arange(x + 1), arr.size)
     return toyindex
+
+
+# input x should have a shpe of (N^2, H, W, C)
+def showsample(x, gap = 2, out_put_file_name = "output_sample.jpg"):
+    N = x.shape[0]
+    H = x.shape[1]
+    W = x.shape[2]
+    side_length = int(np.sqrt(N))
+    background = Image.new('RGB', (side_length * H, side_length * W), (255, 255, 255))
+    k = 0
+    for i in range(0, side_length * H, H):
+        for j in range(0, side_length * W, W):
+            im = Image.fromarray(x[k].astype('uint8'))
+            im.thumbnail((H - gap, W - gap))
+            background.paste(im, (j,i))
+            k += 1
+    background.show()
+    background.save(out_put_file_name)
+
+# input x,y should both have a shpe of (N^2 / 2, H, W, C)
+def showcompare(x, y, gap = 2, out_put_file_name = "output_sample_compare.jpg"):
+    N = x.shape[0]
+    H = x.shape[1]
+    W = x.shape[2]
+    index = np.array([(ind, ind + N) for ind in range(N)]).reshape(-1, )
+    sample = np.concatenate((x, y), axis = 0)[index]
+    showsample(sample, gap, out_put_file_name)
