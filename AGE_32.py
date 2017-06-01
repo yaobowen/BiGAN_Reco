@@ -466,6 +466,7 @@ def getEmbed(opt):
 	for data_batch in data_batches:
 		if(counter == 0):
 			embed_train = model.sess.run([model.ex], feed_dict={model.x_placeholder: data_batch, model.is_training: False})[0]
+			counter += 1
 		else:
 			temp = model.sess.run([model.ex], feed_dict={model.x_placeholder: data_batch, model.is_training: False})[0]
 			embed_train = np.concatenate((embed_train, temp), axis=0)
