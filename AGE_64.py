@@ -528,11 +528,15 @@ if __name__ == "__main__":
 		trainModel(opt)
 	elif(opt.mode == 'sample'):
 		x, gex, gz = sampleModel(opt)
+		if not os.path.exists(opt.output_dir):
+    		os.makedirs(opt.output_dir)
 		np.save(os.path.join(opt.output_dir, "x.npy"), x)
 		np.save(os.path.join(opt.output_dir, "gex.npy"), gex)
 		np.save(os.path.join(opt.output_dir, "gz.npy"), gz)
 	elif(opt.mode == 'test'):
 		embed_train, embed_val = getEmbed(opt)
+		if not os.path.exists(opt.output_dir):
+    		os.makedirs(opt.output_dir)
 		np.save(os.path.join(opt.output_dir, "embed_train.npy"), embed_train)
 		np.save(os.path.join(opt.output_dir, "embed_val.npy"), embed_val)
 
