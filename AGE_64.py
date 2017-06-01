@@ -170,7 +170,6 @@ class AGE_64(object):
 
 	def sample(self, x, sample_size, sample_seed):
 		z = self.latent(sample_size * sample_size)
-		print(x.shape)
 		d = {self.x_placeholder: x[:sample_size*sample_size, :, :, :], self.z_placeholder: z,
 			self.is_training: False}
 		x, gex, gz = self.sess.run([self.rescale(self.x), self.rescale(self.gex), self.rescale(self.gz)], 
