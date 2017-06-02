@@ -49,10 +49,10 @@ class AGE_64(object):
 
 
 		# add the transformed tensor
-		self.ex = self.encoder(self.x)
+		self.ex, self.embed = self.encoder(self.x)
 		self.gex = self.generator(self.ex)
 		self.gz = self.generator(self.z_placeholder, reuse = True)
-		self.egz = self.encoder(self.gz, reuse = True)
+		self.egz, _ = self.encoder(self.gz, reuse = True)
 
 		# add losses
 		self.fake_divergence = self.divergence(self.egz)
@@ -267,7 +267,11 @@ class AGE_64(object):
 			#input size 1 * 1 * z_dim
 			out = tf.reshape(out, [-1, self.z_dim])
 			out = tf.nn.l2_normalize(out, 1, name="out")
-		return out
+
+			conv4 = tf.reshape(conv4, shape=[-1, 4 * 4 * 8 * self.df_dim])
+			conv5 = tf.reshape(conv5, shape=[-1, 2 * 2 * self.z_dim])
+			embed = tf.concat([conv4, conv5, out], axis=1, name="embed")
+		return out, embed
 
 
 	def generator(self, z, reuse = False, scope_str = "Generator"):
@@ -485,12 +489,12 @@ def getEmbed(opt):
 	counter = 0
 	for data_batch in data_batches:
 		if(counter == 0):
-			embed_train = model.sess.run([model.ex], feed_dict={model.x_placeholder: data_batch, model.is_training: False})[0]
+			embed_train = model.sess.run([model.embed], feed_dict={model.x_placeholder: data_batch, model.is_training: False})[0]
 			counter += 1
 		else:
-			temp = model.sess.run([model.ex], feed_dict={model.x_placeholder: data_batch, model.is_training: False})[0]
+			temp = model.sess.run([model.embed], feed_dict={model.x_placeholder: data_batch, model.is_training: False})[0]
 			embed_train = np.concatenate((embed_train, temp), axis=0)
-	embed_val = model.sess.run([model.ex], feed_dict={model.x_placeholder: X_val, model.is_training: False})[0]
+	embed_val = model.sess.run([model.embed], feed_dict={model.x_placeholder: X_val, model.is_training: False})[0]
 	return embed_train, embed_val
 
 if __name__ == "__main__":
