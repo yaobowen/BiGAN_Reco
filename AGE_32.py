@@ -248,9 +248,9 @@ class AGE_32(object):
 			out = tf.reshape(out, [-1, self.z_dim])
 			out = tf.nn.l2_normalize(out, 1, name="out")
 
-			conv4 = tf.reshape(conv4, shape=[-1, 4 * 4 * 4 * self.df_dim])
-			conv5 = tf.reshape(conv5, shape=[-1, 2 * 2 * self.z_dim])
-			embed = tf.concat([conv4, conv5, out], axis=1, name="embed")
+			conv3 = tf.reshape(conv3, shape=[-1, 4 * 4 * 4 * self.df_dim])
+			conv4 = tf.reshape(conv4, shape=[-1, 2 * 2 * self.z_dim])
+			embed = tf.concat([conv3, conv4, out], axis=1, name="embed")
 		return out, embed
 
 
