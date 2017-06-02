@@ -376,6 +376,11 @@ def trainModel(opt):
 		print("load data...")
 		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
 		print("finish loading")
+	elif(opt.dataset == "cifar10"):
+		data_dir = "../data/data_cifar10"
+		print("load data...")
+		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
+		print("finish loading")
 	else:
 		print('no such dataset!')
 		return	
@@ -415,6 +420,11 @@ def sampleModel(opt):
 		print("load data...")
 		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
 		print("finish loading")
+	elif(opt.dataset == "cifar10"):
+		data_dir = "../data/data_cifar10"
+		print("load data...")
+		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
+		print("finish loading")
 	else:
 		print('no such dataset!')
 		return	
@@ -450,6 +460,11 @@ def getEmbed(opt):
 		print("finish loading")
 	elif(opt.dataset == "svhn"):
 		data_dir = "../data/data_svhn"
+		print("load data...")
+		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
+		print("finish loading")
+	elif(opt.dataset == "cifar10"):
+		data_dir = "../data/data_cifar10"
 		print("load data...")
 		X_train, y_train, X_val, y_val, X_test, y_test = load_data(data_dir, prefix="")
 		print("finish loading")
