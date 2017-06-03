@@ -111,20 +111,20 @@ class AGE_32(object):
 		else:
 			self.sess.run(tf.global_variables_initializer())
 
-	def train(self, X_train, X_val, epochs, restore, use_batchnorm=True):
+	def train(self, X_train, X_val, epochs, restore):
 		for i in range(epochs):
 			print("training for epoch ", i)
 			self.run_epoch(X_train, X_val, i)
 		self.saver.save(self.sess, self.save_dir)
 		print("Model saved at", self.save_dir)
 
-	def run_epoch(self, X_train, X_val, epoch, use_batchnorm=True):
+	def run_epoch(self, X_train, X_val, epoch):
 		N = X_train.shape[0]
 		data_batches = getMiniBatch(X_train, batch_size = self.batch_size)
 		counter = 0
 		for data_batch in data_batches:
 			latent_batch = self.latent(self.batch_size)
-			d = {self.x_placeholder:data_batch, self.z_placeholder:latent_batch, self.is_training:use_batchnorm}
+			d = {self.x_placeholder:data_batch, self.z_placeholder:latent_batch, self.is_training:True}
 			for i in range(self.g_iter - 1):
 				self.sess.run([self.g_optimizer], feed_dict=d)
 
@@ -396,7 +396,7 @@ def trainModel(opt):
 	use_batchnorm = True
 	if(opt.dataset=="mnist"):
 		use_batchnorm = False
-	model.train(X_train, X_val, opt.nepoch, opt.restore, use_batchnorm)
+	model.train(X_train, X_val, opt.nepoch, opt.restore)
 	return model
 
 def sampleModel(opt):
@@ -448,8 +448,8 @@ def getEmbed(opt):
 		mnist = input_data.read_data_sets("../data/MNIST_data/", one_hot=True)
 		X_train = np.reshape(mnist.train.images, [-1,28,28])
 		X_val = np.reshape(mnist.validation.images, [-1,28,28])
-		X_train = np.expand_dims(X_train, 3)
-		X_val = np.expand_dims(X_val, 3)
+		X_train = np.expand_dims(X_train, 3) * 255.0
+		X_val = np.expand_dims(X_val, 3) * 255.0
 		print("finish loading")
 	elif(opt.dataset == "imagenet"):
 		data_dir = "../data/data_imagenet"
