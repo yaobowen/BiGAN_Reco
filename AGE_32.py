@@ -111,20 +111,20 @@ class AGE_32(object):
 		else:
 			self.sess.run(tf.global_variables_initializer())
 
-	def train(self, X_train, X_val, epochs, restore):
+	def train(self, X_train, X_val, epochs, restore, use_batchnorm=True):
 		for i in range(epochs):
 			print("training for epoch ", i)
 			self.run_epoch(X_train, X_val, i)
 		self.saver.save(self.sess, self.save_dir)
 		print("Model saved at", self.save_dir)
 
-	def run_epoch(self, X_train, X_val, epoch):
+	def run_epoch(self, X_train, X_val, epoch, use_batchnorm=True):
 		N = X_train.shape[0]
 		data_batches = getMiniBatch(X_train, batch_size = self.batch_size)
 		counter = 0
 		for data_batch in data_batches:
 			latent_batch = self.latent(self.batch_size)
-			d = {self.x_placeholder:data_batch, self.z_placeholder:latent_batch, self.is_training:True}
+			d = {self.x_placeholder:data_batch, self.z_placeholder:latent_batch, self.is_training:use_batchnorm}
 			for i in range(self.g_iter - 1):
 				self.sess.run([self.g_optimizer], feed_dict=d)
 
@@ -393,7 +393,10 @@ def trainModel(opt):
 		log_dir=opt.log_dir, save_dir=opt.save_dir, 
 		c_dim=opt.c_dim, z_dim=opt.z_dim, 
 		miu=opt.miu, lamb=opt.lamb, g_iter=opt.g_step, restore=opt.restore)
-	model.train(X_train, X_val, opt.nepoch, opt.restore)
+	use_batchnorm = True
+	if(opt.dataset=="mnist"):
+		use_batchnorm = False
+	model.train(X_train, X_val, opt.nepoch, opt.restore, use_batchnorm)
 	return model
 
 def sampleModel(opt):
