@@ -378,8 +378,8 @@ def trainModel(opt):
 		mnist = input_data.read_data_sets("../data/MNIST_data/", one_hot=True)
 		X_train = np.reshape(mnist.train.images, [-1,28,28])
 		X_val = np.reshape(mnist.validation.images, [-1,28,28])
-		X_train = np.expand_dims(X_train, 3)
-		X_val = np.expand_dims(X_val, 3)
+		X_train = np.expand_dims(X_train, 3) * 255.0
+		X_val = np.expand_dims(X_val, 3) * 255.0
 		print("finish loading")
 	elif(opt.dataset == "imagenet"):
 		data_dir = "../data/data_imagenet"
@@ -422,8 +422,8 @@ def sampleModel(opt):
 		mnist = input_data.read_data_sets("../data/MNIST_data/", one_hot=True)
 		X_train = np.reshape(mnist.train.images, [-1,28,28])
 		X_val = np.reshape(mnist.validation.images, [-1,28,28])
-		X_train = np.expand_dims(X_train, 3)
-		X_val = np.expand_dims(X_val, 3)
+		X_train = np.expand_dims(X_train, 3) * 255.0
+		X_val = np.expand_dims(X_val, 3) * 255.0
 		print("finish loading")
 	elif(opt.dataset == "imagenet"):
 		data_dir = "../data/data_imagenet"
@@ -465,8 +465,8 @@ def getEmbed(opt):
 		mnist = input_data.read_data_sets("../data/MNIST_data/", one_hot=True)
 		X_train = np.reshape(mnist.train.images, [-1,28,28])
 		X_val = np.reshape(mnist.validation.images, [-1,28,28])
-		X_train = np.expand_dims(X_train, 3)
-		X_val = np.expand_dims(X_val, 3)
+		X_train = np.expand_dims(X_train, 3) * 255.0
+		X_val = np.expand_dims(X_val, 3) * 255.0
 		print("finish loading")
 	elif(opt.dataset == "imagenet"):
 		data_dir = "../data/data_imagenet"
